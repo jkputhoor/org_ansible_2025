@@ -1,0 +1,6 @@
+---
+- hosts: flame-lon flameassist-lon
+  roles:
+    - role: manage-engine
+      vars:
+        api_key: '1003.ccdeda22645bddee2f257f778ea250e8.5f83c8d05bb96b141ff8d7bc0629ffae'

@@ -1,0 +1,20 @@
+---
+- name: Check if Blackmagic card is installed
+  shell: "lspci | grep Blackmagic"
+  register: blackmagic_card
+  changed_when: false
+  failed_when: false
+
+- name: Check if Blackmagic Desktop Video is installed
+  shell: "rpm -qa | grep desktopvideo"
+  register: desktopvideo_installed
+  changed_when: false
+  failed_when: false
+
+- name: Get installed desktopvideo version
+  set_fact:
+    current_desktopvideo_version: "{{ desktopvideo_installed.stdout.split('-')[1] if desktopvideo_installed == 0 else '' }}"
+
+- name: Include specific action tasks based on 'do' parameter
+  include_tasks: "{{ do }}.yml"
+  when: do in ['install', 'update', 'uninstall']

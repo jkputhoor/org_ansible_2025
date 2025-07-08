@@ -1,0 +1,26 @@
+---
+- name: Check for Thunderbird installation on systems
+  hosts: linux
+  remote_user: root
+  become: yes
+  gather_facts: false
+
+  tasks:
+    - name: Check if Thunderbird is installed
+      command: dnf list installed thunderbird
+      register: thunderbird_installed
+      ignore_errors: yes
+      tags: check
+
+    - name: Display system with Thunderbird installed
+      debug:
+        msg: "Thunderbird is installed on {{ inventory_hostname }}"
+      when: thunderbird_installed.rc == 0
+      tags: check
+
+    - name: Display system without Thunderbird installed
+      debug:
+        msg: "Thunderbird is NOT installed on {{ inventory_hostname }}"
+      when: thunderbird_installed.rc != 0
+      tags: check
+

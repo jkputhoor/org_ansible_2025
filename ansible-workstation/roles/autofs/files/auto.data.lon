@@ -1,0 +1,1 @@
+store                     -fstype=nfs,rw,soft,bg          data.hpc.smoke.lon:/ifs/data:

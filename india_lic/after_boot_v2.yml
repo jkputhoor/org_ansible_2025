@@ -1,0 +1,30 @@
+- name: Check services after reboot
+  hosts: all
+  become: yes
+  tasks:
+    - name: Wait for the system to come back online
+      wait_for:
+        timeout: 10
+        state: started
+        delay: 5
+
+    - name: Check if all services are up after reboot
+      command: systemctl list-units --type=service --state=running
+      register: post_reboot_service_status
+
+    - name: Display services after reboot
+      debug:
+        msg: "{{ post_reboot_service_status.stdout_lines }}"
+
+    - name: Check license usage
+      command: /usr/RLM/x64_l1.admin/rlmutil rlmstat -a -c /mnt/jk/lic/*.lic
+      register: license_status
+
+    - name: Filter used licenses
+      set_fact:
+        used_licenses: "{{ license_status.stdout_lines | select('search', 'inuse: [1-9]') | list }}"
+
+    - name: Display used licenses
+      debug:
+        msg: "{{ used_licenses }}"
+

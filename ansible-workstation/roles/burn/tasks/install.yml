@@ -1,0 +1,4 @@
+---
+- name: Run Burn installer
+  command: "/repo/autodesk/burn/autodesk_burn_{{ burn_version }}_LINUX64/INSTALL_BURN --noui --nocheck --noagreement"
+  when: burn_installed.rc != 0

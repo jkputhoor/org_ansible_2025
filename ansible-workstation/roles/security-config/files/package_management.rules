@@ -1,0 +1,2 @@
+-w /var/log/yum.log -p wa -k package_management
+-w /var/log/dnf.log -p wa -k package_management

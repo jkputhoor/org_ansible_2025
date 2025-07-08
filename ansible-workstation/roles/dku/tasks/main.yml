@@ -1,0 +1,26 @@
+---
+- name: Check if DKU is installed
+  command: rpm -q DKU
+  register: dku_installed
+  changed_when: false
+  failed_when: false
+
+- name: Set installed DKU version
+  set_fact:
+    dku_version: "{{ dku_installed.stdout.split('-')[1] if dku_installed.rc == 0 else 'not installed'}}"
+
+- name: DEBUG print DKU facts
+  debug:
+    msg: "DKU Installed: {{ dku_installed }} then DKU VERSION: {{ dku_version }}"
+
+- name: Install DKU
+  import_tasks: install.yml
+  when: do == 'install' and dku_installed.rc != 0
+
+- name: Update DKU
+  import_tasks: update.yml
+  when: do == 'update' and dku_installed.rc == 0 and 'version' > dku_version
+
+- name: Uninstall DKU
+  import_tasks: uninstall.yml
+  when: do == 'uninstall' and dku_installed.rc == 0

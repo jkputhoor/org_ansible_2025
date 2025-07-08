@@ -1,0 +1,17 @@
+---
+- name: Remove Thunderbird from all systems
+  hosts: linux
+  remote_user: root
+  become: yes
+  gather_facts: false
+
+  tasks:
+    - name: Check if Thunderbird is installed
+      command: dnf list installed thunderbird
+      register: thunderbird_installed
+      ignore_errors: yes
+
+    - name: Remove Thunderbird if installed
+      command: dnf remove -y thunderbird
+      when: thunderbird_installed.rc == 0
+

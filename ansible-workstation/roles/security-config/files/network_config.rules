@@ -1,0 +1,1 @@
+-w /etc/sysconfig/network-scripts/ -p wa -k network_config

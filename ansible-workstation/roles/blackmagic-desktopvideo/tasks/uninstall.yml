@@ -1,0 +1,17 @@
+---
+- name: Uninstall desktopvideo-gui
+  dnf:
+    name: desktopvideo-gui-{{ desktopvideo_version }}.x86_64
+    state: absent
+    disable_gpg_check: true
+
+
+- name: Uninstall desktopvideo
+  dnf:
+    name: desktopvideo-{{ desktopvideo_version }}.x86_64
+    state: absent
+    disable_gpg_check: true
+
+- name: Reboot after uninstall
+  reboot:
+    msg: "Rebooting after uninstalling desktopvideo"

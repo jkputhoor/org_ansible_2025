@@ -1,0 +1,29 @@
+---
+- name: Determine OS family
+  ansible.builtin.setup:
+    gather_subset:
+      - "os_family"
+      - "distribution"
+
+- name: Set symlink source for Rocky Linux
+  set_fact:
+    symlink_src: "{{ rocky_source }}"
+  when: ansible_facts['os_family'] == "RedHat" and ansible_facts['distribution'] == "Rocky"
+
+- name: Set symlink source for Ubuntu
+  set_fact:
+    symlink_src: "{{ ubuntu_source }}"
+  when: ansible_facts['os_family'] == "Debian" and ansible_facts['distribution'] == "Ubuntu"
+
+- name: Ensure /repo symlink is present
+  file:
+    src: "{{ symlink_src }}"
+    dest: /repo
+    state: link
+  when: symlink_src is defined and do == "link"
+
+- name: Ensure /repo symlink is absent
+  file:
+    path: /repo
+    state: absent
+  when: do == "unlink"

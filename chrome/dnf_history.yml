@@ -1,0 +1,16 @@
+---
+- name: Retrieve and display DNF transaction history
+  hosts: linux
+  remote_user: root
+  become: yes
+  gather_facts: false
+
+  tasks:
+    - name: Get DNF transaction history list
+      command: dnf history list
+      register: dnf_history
+
+    - name: Display DNF history list
+      debug:
+        msg: "{{ dnf_history.stdout_lines }}"
+

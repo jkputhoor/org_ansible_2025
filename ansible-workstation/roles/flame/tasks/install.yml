@@ -1,0 +1,7 @@
+---
+- name: Run Flame installer
+  command: "/repo/autodesk/flame/autodesk_flame_{{ flame_version }}_LINUX64/INSTALL_FLAME --noui --nocheck --noagreement"
+  when: flame_installed.rc != 0
+
+- name: Run configuration tasks
+  include_tasks: configure.yml

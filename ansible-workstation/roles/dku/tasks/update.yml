@@ -1,0 +1,5 @@
+---
+- name: Install DKU
+  command: "/repo/autodesk/dku/DKU_{{version}}/INSTALL_DKU --silentgeneric"
+  register: update_dku
+  notify: Reboot

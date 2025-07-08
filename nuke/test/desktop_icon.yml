@@ -1,0 +1,35 @@
+---
+- name: nuke installe 
+  hosts: linux
+  remote_user: root
+  gather_facts: false
+  become: yes
+  tasks:
+   - name: create desktop icon for nuke studio
+     blockinfile:
+      create: yes
+      dest: /usr/share/applications/NukeStudio.desktop
+      content: |
+        [Desktop Entry]
+        Name=NukeStudio
+        Comment=nuke
+        Exec=/usr/local/Nuke13.1v2/Nuke13.1 --studio
+        Terminal=false
+        Type=Application
+        Categories=Qt;Graphics;3DGraphics;
+        Icon=/usr/local/Nuke13.1v2/plugins/icons/NukeStudioApp48.png
+   - name: create desktop icon for nuke X
+     blockinfile:
+      create: yes
+      dest: /usr/share/applications/NukeX.desktop
+      content: |
+         [Desktop Entry]
+         Name=Nukex
+         Comment=Nuke
+         Exec=/usr/local/Nuke13.1v2/Nuke13.1 --nukex
+         Terminal=false
+         Type=Application
+         Categories=Qt;Graphics;3DGraphics;
+         Icon=/usr/local/Nuke13.1v2/plugins/icons/NukeXApp48.png
+
+          

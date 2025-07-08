@@ -1,0 +1,16 @@
+- name: Stop Octane Render Daemon
+  hosts: linux
+  remote_user: root
+  gather_facts: false
+  tasks:
+    - name: Get Octane Daemon process IDs
+      shell: ps -ef | grep -i octa | grep -v grep | awk '{print $2}'
+      register: octane_pids
+      ignore_errors: true
+
+    - name: Stop Octane Render Daemons
+      shell: "kill -9 {{ item }}"
+      with_items: "{{ octane_pids.stdout_lines }}"
+      ignore_errors: true
+      become: yes
+

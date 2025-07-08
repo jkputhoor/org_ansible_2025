@@ -1,0 +1,9 @@
+---
+- name: Ensure destination directory exists
+  file:
+    path: "/opt/LOGIK"
+    state: directory
+    mode: '0777'
+
+- name: Copy matchbox shaders
+  command: "cp -r /repo/logik-matchbook/shaders /opt/LOGIK/"

@@ -1,0 +1,2 @@
+-w /etc/ -p wa -k config_changes
+-w /usr/bin/ -p x -k exec

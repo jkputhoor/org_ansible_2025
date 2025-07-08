@@ -1,0 +1,46 @@
+---
+- name: install chrome
+  hosts: linux
+  remote_user: root
+  gather_facts: false
+  become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3.9  # Force Python 3 on the remote host
+  vars_files:
+    - source_path.yml
+
+  tasks:
+    - name: Get list of folders in /opt/Autodesk/clip/stonefs
+      find:
+        paths: /opt/Autodesk/clip/stonefs
+        file_type: directory
+        depth: 1
+      register: stonefs_dirs
+      ignore_errors: yes
+
+    - name: Get list of folders in /opt/Autodesk/clip/stonefs7
+      find:
+        paths: /opt/Autodesk/clip/stonefs7
+        file_type: directory
+        depth: 1
+      register: stonefs7_dirs
+      ignore_errors: yes
+
+    - name: Print folders in /opt/Autodesk/clip/stonefs
+      debug:
+        msg: >-
+          {% if stonefs_dirs.matched > 0 %}
+            Folders in /opt/Autodesk/clip/stonefs: {{ stonefs_dirs.files | map(attribute='path') | list }}
+          {% else %}
+            No folders in /opt/Autodesk/clip/stonefs
+          {% endif %}
+
+    - name: Print folders in /opt/Autodesk/clip/stonefs7
+      debug:
+        msg: >-
+          {% if stonefs7_dirs.matched > 0 %}
+            Folders in /opt/Autodesk/clip/stonefs7: {{ stonefs7_dirs.files | map(attribute='path') | list }}
+          {% else %}
+            No folders in /opt/Autodesk/clip/stonefs7
+          {% endif %}
+

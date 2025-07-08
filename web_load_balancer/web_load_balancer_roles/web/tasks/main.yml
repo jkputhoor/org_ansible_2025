@@ -1,0 +1,24 @@
+# tasks file for web
+---
+- name: Install HTTPD on web servers
+  package:
+    name: httpd
+    state: present
+  register: webhttpd
+
+- name: Debug message if HTTPD installation is successful
+  debug:
+    msg: "HTTPD installed successfully"
+  when: webhttpd is defined and not webhttpd.failed
+
+- name: Copy HTTP page to web servers
+  copy:
+    dest: "/var/www/html/index.html"
+    content: "Welcome to LW \n {{ ansible_hostname }} \n Date: {{ ansible_date_time.date }} \n Time: {{ ansible_date_time.time }}"
+
+- name: Start HTTPD service on web servers
+  service:
+    name: httpd
+    state: started
+  when: not webhttpd.failed
+

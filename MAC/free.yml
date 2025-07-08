@@ -1,0 +1,62 @@
+---
+- hosts: all
+  gather_facts: no
+  vars_files:
+    - vault.yml
+  tasks:
+    - name: Ensure VideoCopilot directories exist
+      become: yes
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: wltadmin
+        group: everyone
+        mode: '0777'
+      loop:
+        - "/Applications/Adobe After Effects 2024/Plug-ins/VideoCopilot"
+        - "/Applications/Adobe After Effects 2025/Plug-ins/VideoCopilot"
+      tags:
+        - vc
+
+    - name: Copy VCReflect plugin files to VideoCopilot folders
+      become: yes
+      copy:
+        src: "/Volumes/smoke/Personal/jk/2024_SOFT/MAC/Plugins/free/VideoCopilot/"
+        dest: "{{ item }}"
+        owner: wltadmin
+        group: everyone
+        mode: '0777'
+        remote_src: yes
+      loop:
+        - "/Applications/Adobe After Effects 2024/Plug-ins/VideoCopilot/"
+        - "/Applications/Adobe After Effects 2025/Plug-ins/VideoCopilot/"
+      tags:
+        - vc
+
+    - name: Set permissions using chmod
+      become: yes
+      command: chmod -R 0777 "{{ item }}"
+      loop:
+        - "/Applications/Adobe After Effects 2024/Plug-ins/VideoCopilot/"
+        - "/Applications/Adobe After Effects 2025/Plug-ins/VideoCopilot/"
+      tags:
+        - vc
+
+    - name: Copy the MisterHorse app to /Applications
+      become: yes
+      copy:
+        src: "/Volumes/smoke/Personal/jk/2024_SOFT/MAC/Plugins/free/Mister Horse Product Manager.app"
+        dest: "/Applications/"
+        remote_src: yes
+      tags:
+        - horse
+
+    - name: Set global permissions for MisterHorse app
+      become: yes
+      file:
+        path: "/Applications/Mister Horse Product Manager.app"
+        mode: '0755'
+        recurse: yes
+      tags:
+        - horse
+

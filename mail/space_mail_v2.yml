@@ -1,0 +1,80 @@
+- name: Gather and send disk space details for lon hosts
+  hosts: lon
+  gather_facts: no
+  vars_files:
+    - vars01.yml
+
+  tasks:
+    - name: Ensure the destination directory exists
+      local_action:
+        module: file
+        path: /Users/jayaput/Documents/space
+        state: directory
+        mode: '0755'
+
+    - name: Gather disk space details
+      command: "df -h /packages"
+      register: disk_space
+
+    - name: Save disk space details to a file
+      copy:
+        content: "{{ disk_space.stdout }}"
+        dest: "/tmp/disk_space_{{ inventory_hostname }}.txt"
+
+    - name: Fetch disk space details to local machine
+      fetch:
+        src: "/tmp/disk_space_{{ inventory_hostname }}.txt"
+        dest: "/Users/jayaput/Documents/space/"
+        flat: yes
+
+- name: Gather and send disk space details for ind hosts
+  hosts: ind
+  gather_facts: no
+  vars_files:
+    - vars01.yml
+
+  tasks:
+    - name: Ensure the destination directory exists
+      local_action:
+        module: file
+        path: /Users/jayaput/Documents/space
+        state: directory
+        mode: '0755'
+
+    - name: Gather disk space details
+      command: "df -h /mnt/StorageMedia/"
+      register: disk_space
+
+    - name: Save disk space details to a file
+      copy:
+        content: "{{ disk_space.stdout }}"
+        dest: "/tmp/disk_space_{{ inventory_hostname }}.txt"
+
+    - name: Fetch disk space details to local machine
+      fetch:
+        src: "/tmp/disk_space_{{ inventory_hostname }}.txt"
+        dest: "/Users/jayaput/Documents/space/"
+        flat: yes
+
+- name: Send combined disk space details via email
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Read disk space details from files
+      shell: cat /Users/jayaput/Documents/space/disk_space_*.txt
+      register: combined_disk_space
+      ignore_errors: true
+
+    - name: Send disk space details via email
+      community.general.mail:
+        host: smtp.gmail.com
+        port: 587
+        username: "{{ gmail_username }}"
+        password: "{{ gmail_password }}"
+        to: "JK <jayakrishnan.puthoor@tagww.com>"
+        subject: "Storage Space Report"
+        body: |
+          Disk Space Details:
+          {{ combined_disk_space.stdout }}
+      when: combined_disk_space.stdout != ""
+

@@ -1,0 +1,30 @@
+- name: Start Octane Render Daemon
+  hosts: linux
+  remote_user: root
+  gather_facts: false
+  tasks:
+    - name: Run Octane Render Daemon in the background
+      shell: "nohup /mnt/octan/OctaneRender_Studio+_2023_1_2_node_linux/run_octane_daemon.sh >/dev/null 2>&1 & disown"
+      async: 30
+      poll: 0
+      become: yes
+      ignore_errors: true
+
+#    - name: Wait for Octane Render Daemon to start
+#      pause:
+#        seconds: 10
+
+    - name: Get Octane Daemon process ID
+      shell: ps -ef | grep -i octa | grep -v grep | awk '{print $2}'
+      register: octane_pid
+      ignore_errors: true
+
+    - name: Fail if Octane Daemon is not running
+      fail:
+        msg: "Octane Render Daemon is not running"
+      when: octane_pid.stdout_lines | length == 0
+
+    - name: Print message if Octane Daemon is running
+      debug:
+        msg: "Octane Render Daemon is running with PID {{ octane_pid.stdout }}"
+

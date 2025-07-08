@@ -1,0 +1,14 @@
+---
+- name: Check if Flame is installed
+  shell: "rpm -qa | grep autodesk.app.flame"
+  register: flame_installed
+  changed_when: false
+  failed_when: false
+
+- name: Get installed Flame version
+  set_fact:
+    current_flame_version: "{{ flame_installed.stdout.split('-')[1] if flame_installed.rc == 0 else '' }}"
+
+- name: Include specific action tasks based on 'do' parameter
+  include_tasks: "{{ do }}.yml"
+  when: do in ['install', 'update', 'uninstall', 'configure']

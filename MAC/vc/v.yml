@@ -1,0 +1,108 @@
+---
+- hosts: all
+  gather_facts: no
+  vars_files:
+    - vault.yml
+
+  tasks:
+    # Tag: manage_element
+    - name: Create VideoCopilot directory if not exists (Element)
+      file:
+        path: "{{ item  }}"
+        state: directory
+        mode: '0755'
+      loop:
+       - "/Applications/Adobe After Effects 2025/Plug-ins/VideoCopilot"
+       - "/Users/Shared/Documents/VideoCopilot"
+       - "/Library/Application Support/VideoCopilot"
+      tags: manage_element
+
+    - name: Copy Element.plugin to VideoCopilot directory
+      copy:
+        src: /Volumes/smoke/Personal/jk/2024_SOFT/MAC/Plugins/VideoCopilot/Latest/2025/VideoCopilot/Element.plugin
+        dest: "/Applications/Adobe\ After\ Effects\ 2025/Plug-ins/VideoCopilot/Element.plugin"
+        mode: '0775'
+        owner: wltadmin
+        group: everyone
+        remote_src: true
+      tags: manage_element
+
+    - name: Copy shared folders to VideoCopilot directory
+      copy:
+        src: "/Volumes/smoke/Personal/jk/2024_SOFT/MAC/Plugins/VideoCopilot/Latest/2025/shared/"
+        dest: "/Users/Shared/Documents/VideoCopilot/"
+        mode: '0775'  # Set permissions to 0777 for all files
+        owner: wltadmin  # Set the owner to wltadmin
+        group: everyone  # Set the group to users
+        remote_src: true
+      tags: manage_element
+      become: true  # Enable privilege escalation
+  
+
+    - name: Copy vcutil to client systems (Element)
+      copy:
+        src: /Users/jayaput/Documents/ansible/MAC/vc/vcutil/vcinstallutil
+        dest: /var/tmp/vcinstallutil
+        mode: '0755'
+      tags: manage_element
+
+    - name: Run vcinstallutil to install Element license
+      command: ./vcinstallutil license install {{ email_id }} {{ email_pass }} elementv2
+      args:
+        chdir: /var/tmp
+      become: yes
+      tags: element_lic
+
+    - name: Copy application support for path 
+      copy:
+        src: "/Volumes/smoke/Personal/jk/2024_SOFT/MAC/Plugins/VideoCopilot/Latest/2025/Application_support/"
+        dest: "/Library/Application Support/VideoCopilot"
+        mode: '0775'  # Set permissions to 0777 for all files
+        owner: wltadmin  # Set the owner to wltadmin
+        group: everyone  # Set the group to users
+        remote_src: true
+      tags: manage_element
+      become: true  # Enable privilege escalation
+
+    # Tag: manage_optical
+    - name: Create VideoCopilot directory if not exists (Optical Flares)
+      file:
+        path: /Applications/Adobe\ After\ Effects\ 2025/Plug-ins/VideoCopilot
+        state: directory
+        mode: '0755'
+      tags: manage_optical
+
+    - name: Copy OpticalFlares.plugin to VideoCopilot directory
+      copy:
+        src: /Volumes/smoke/Personal/jk/2024_SOFT/MAC/Plugins/VideoCopilot/Latest/2025/VideoCopilot/OpticalFlares.plugin
+        dest: /Applications/Adobe\ After\ Effects\ 2025/Plug-ins/VideoCopilot/OpticalFlares.plugin
+        mode: '0755'
+      tags: manage_optical
+
+    - name: Copy vcutil to client systems (Optical Flares)
+      copy:
+        src:  /Users/jayaput/Documents/ansible/MAC/vc/vcutil/vcinstallutil
+        dest: /var/tmp/vcinstallutil
+        mode: '0755'
+      tags: manage_optical
+
+    - name: Run vcinstallutil to install Optical Flares license
+      command: ./vcinstallutil license install {{ email_id }} {{ email_pass }} opticalflares
+      args:
+        chdir: /var/tmp
+      become: yes
+      tags: optical_lic
+
+#    # Tag: manage_license_removal
+#    - name: Remove Element license
+#      file:
+#        path: /Library/Application Support/VideoCopilot/element2_license
+#        state: absent
+#      tags: manage_license_removal
+#
+#    - name: Remove Optical Flares license
+#      file:
+#        path: /Library/Application Support/VideoCopilot/optical_flares
+#        state: absent
+#      tags: manage_license_removal
+#

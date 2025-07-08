@@ -1,0 +1,31 @@
+---
+- hosts: all
+  gather_facts: no
+  vars_files:
+    - vault.yml  # Contains sensitive variables if needed
+
+  tasks:
+    - name: Find all Adobe applications
+      become: yes
+      become_user: root
+      become_method: su
+      find:
+        paths: "/Applications"
+        patterns: "Adobe*"
+        file_type: directory
+      register: adobe_apps
+
+    - name: Collect Adobe application names and versions
+      set_fact:
+        installed_adobe_apps: "{{ installed_adobe_apps | default([]) + [item.path | basename] }}"
+      loop: "{{ adobe_apps.files }}"
+
+    - name: Display summary of installed Adobe applications
+      debug:
+        msg: |
+          Host: {{ inventory_hostname }}
+          Installed Adobe applications:
+          {% for app in installed_adobe_apps %}
+          - {{ app }}
+          {% endfor %}
+

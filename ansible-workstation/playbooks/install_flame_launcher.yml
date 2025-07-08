@@ -1,0 +1,8 @@
+---
+- hosts: london
+  roles:
+    - role: flame-launcher
+      vars:
+        owner: flame2024
+        group: flame2024
+        flame_version: 2024.2.2

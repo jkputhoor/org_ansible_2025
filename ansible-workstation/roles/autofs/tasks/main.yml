@@ -1,0 +1,45 @@
+---
+- name: Ensure /etc/auto.master matches version held in Ansible
+  copy:
+    src: auto.master.{{ location }}
+    dest: /etc/auto.master
+    owner: root
+    group: root
+    mode: '0644'
+  register: automaster
+
+- name: Ensure /etc/auto.data matches version held in Ansible
+  copy:
+    src: auto.data.{{ location }}
+    dest: /etc/auto.data
+    owner: root
+    group: root
+    mode: '0644'
+  register: autodata
+
+- name: Ensure /etc/autofs.conf matches version held in Ansible
+  copy:
+    src: autofs.conf.{{ location }}
+    dest: /etc/autofs.conf
+    owner: root
+    group: root
+    mode: '0644'
+  register: autofsconf
+
+- name: enable autofs
+  command: "systemctl enable autofs"
+  when: autofsconf.changed or autodata.changed or automaster.changed
+
+
+- name: start autofs
+  command: "systemctl start autofs"
+  when: autofsconf.changed or autodata.changed or automaster.changed
+
+
+- name: Run automount
+  command: "/usr/sbin/automount"
+  when: autofsconf.changed or autodata.changed or automaster.changed
+
+- name: Test mount point
+  command: "stat /hosts/data/store/ifs"
+  when: autofsconf.changed or autodata.changed or automaster.changed

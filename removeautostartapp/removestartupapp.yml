@@ -1,0 +1,11 @@
+---
+- name: nuke installe 
+  hosts: linux
+  remote_user: root
+  gather_facts: false
+  become: yes
+  tasks:
+    - name: removing team application from startup
+      file:
+       path: /opt/Autodesk/flameassist_2021.1.1/.config/autostart/teams.desktop
+       state: absent

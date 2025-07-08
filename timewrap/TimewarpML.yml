@@ -1,0 +1,23 @@
+- name: copy and timewrap python hook 
+  hosts: linux
+  remote_user: root
+  gather_facts: false
+  become: yes
+  vars_files:
+    - sourceTimewarpML.yml
+  tasks:
+  - stat: path="{{ path }}"
+    register: st
+  - name: user id 
+    shell: "grep -i flame2021.1  /etc/passwd  | cut -d : -f 1"
+    register: userid
+  - name: copying file with playbook
+    copy:
+      src: "{{ source }}"
+#      remote_src: True
+      dest: "{{ path }}"
+      mode: 0775
+      owner: "{{ userid.stdout }}"
+    when: st.stat.exists == False
+#    when: not st.stat.exists
+

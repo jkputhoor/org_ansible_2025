@@ -1,0 +1,21 @@
+---
+- name: Disable Core Dumps
+  include_tasks: disable-core-dumps.yml
+
+- name: Edit hosts file with ip and fqdn
+  include_tasks: edit-hosts.yml
+
+- name: Strictly define NFS clients in NFS exports file
+  include_tasks: nfs-exports.yml
+
+- name: SSHD Hardening
+  include_tasks: sshd-hardening.yml
+
+- name: Remove unnecessary and vulnerable packages
+  include_tasks: remove-unnecessary-packages.yml
+
+- name: Define audit rules
+  include_tasks: audit.yml
+
+- name: Update all non-kernel packages with dnf
+  command: dnf update -y --skip-broken --best --allowerasing --exclude=kernel* --exclude=kmod*

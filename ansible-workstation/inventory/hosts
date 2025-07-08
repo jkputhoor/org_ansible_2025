@@ -1,0 +1,45 @@
+[all:children]
+dev-lon
+flame-lon
+flameassist-lon
+
+[london:children]
+dev-lon
+flame-lon
+flameassist-lon
+
+[london:vars]
+location="lon"
+rocky_source="/hosts/data/store/ifs/eng/repos/linux/rocky"
+ubuntu_source="/hosts/data/store/ifs/eng/repos/linux/ubuntu"
+
+[dev-lon]
+smlonassist099.dyn.smoke.lon gpu=K6000
+
+[flame-lon]
+flame01.dyn.smoke.lon gpu=RTXA6000
+flame02.dyn.smoke.lon gpu=RTXA6000
+flame03.dyn.smoke.lon gpu=RTXA6000
+
+[flameassist-lon]
+assist01.dyn.smoke.lon gpu=M6000
+assist02.dyn.smoke.lon gpu=M6000
+assist03.dyn.smoke.lon gpu=M6000
+assist04.dyn.smoke.lon gpu=M6000
+
+[india]
+172.24.146.152
+172.24.146.153 
+172.24.146.155 
+172.24.146.161 
+172.24.146.163 
+172.24.146.165 
+
+[india:vars]
+location="ind"
+rocky_source="/mnt/Smoke/Personal/jk/repo"
+ansible_user=root
+ansible_become=yes
+ansible_become_user=root
+
+

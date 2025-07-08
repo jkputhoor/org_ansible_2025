@@ -1,0 +1,23 @@
+---
+- name: Run pcoip rpm installer
+  dnf:
+    name: /repo/teradici/pcoip_host-{{ pcoip_version }}.x86_64.rpm
+    state: present
+    disable_gpg_check: true
+  when: current_pcoip_version.rc != 0
+
+- name: Ensure dithering keyword is set for pcoip performance in xorg.conf
+  lineinfile:
+    path: /etc/X11/xorg.conf
+    line: '    Option     "FlatPanelProperties" "Dithering=Disabled"'
+    insertafter: 'Section "Screen"'
+    state: present
+
+- name: Create autologin to flame user to bypass interactivity bug
+  blockinfile:
+    path: /etc/gdm/custom.conf
+    insertafter: "WaylandEnable=false"
+    block: |
+      # Troubleshooting PCoIP
+      AutomaticLoginEnable=True
+      AutomaticLogin=flame2024

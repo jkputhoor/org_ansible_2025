@@ -1,0 +1,33 @@
+---
+- name: Check for multiple package installations on systems
+  hosts: linux
+  remote_user: root
+  become: yes
+  gather_facts: false
+
+  vars:
+    packages:
+      - git-core
+      - git
+      - thunderbird
+      - firefox
+
+  tasks:
+    - name: Check if packages are installed
+      command: "dnf list installed {{ item }}"
+      loop: "{{ packages }}"
+      register: package_status
+      ignore_errors: yes
+      tags: check
+
+    - name: Generate package installation report
+      set_fact:
+        package_results: "{{ package_results | default({}) | combine({item.item: (item.rc == 0) | ternary('Installed', 'Not Installed') }) }}"
+      loop: "{{ package_status.results }}"
+      tags: check
+
+    - name: Display package installation status
+      debug:
+        msg: "{{ package_results }}"
+      tags: check
+

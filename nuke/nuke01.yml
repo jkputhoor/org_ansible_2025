@@ -1,0 +1,96 @@
+---
+- name: nuke installe 
+  hosts: linux
+  remote_user: root
+  gather_facts: false
+  become: yes
+  vars_files:
+    - source_path.yml
+  tasks:
+    - name: check installer avilable 
+      stat:
+       path: "{{ path }}"
+      register: installer          
+#############################################################
+    - name: copying file with playbook
+      copy:
+        src: "{{ source }}"
+        remote_src: True
+        dest: "{{ path }}"
+        mode: 0755
+      when: not installer.stat.exists
+#############################################################
+    - name: user id 
+      shell: "grep -i flame  /etc/passwd  | cut -d : -f 1"
+      register: userid
+#############################################################
+    - name: check FoundryApplication  folder 
+      become: true
+      become_method: su
+      become_user: "{{userid.stdout}}"
+      stat:
+        path: /usr/local/Nuke13.1v2
+      register: FoundryApplication
+#############################################################
+    - name: installing nuke
+      shell: /var/tmp/./Nuke13.1v2-linux-x86_64.run --prefix=/usr/local   --accept-foundry-eula
+      when: not FoundryApplication.stat.exists
+#############################################################
+    - name: check FoundryLicensing folder 
+      become: true
+      become_method: su
+      become_user: "{{userid.stdout}}"
+      stat:
+        path: ~/FoundryLicensing
+      register: FoundryLicensefolder
+#############################################################
+    - name: make sure directory exsist
+      become: true
+      become_method: su
+      become_user: "{{userid.stdout}}" 
+      file:
+       path: ~/FoundryLicensing
+       state: directory
+       owner: "{{userid.stdout}}"
+       group: users 
+       mode: 0770
+      when: not FoundryLicensefolder.stat.exists
+#############################################################
+    - name: adding license path
+      become: true
+      become_method: su
+      become_user: "{{userid.stdout}}" 
+      copy:
+       dest: ~/FoundryLicensing/foundry_client.lic
+       content: HOST 172.24.146.136 any 4101
+#############################################################
+    - name: create desktop icon for nuke studio
+      blockinfile:
+       create: yes
+       dest: /usr/share/applications/NukeStudio.desktop
+       content: |
+        [Desktop Entry]
+        Name=NukeStudio
+        Comment=nuke
+        Exec=/usr/local/Nuke13.1v2/Nuke13.1 --studio
+        Terminal=false
+        Type=Application
+        Categories=Qt;Graphics;3DGraphics;
+        Icon=/usr/local/Nuke13.1v2/plugins/icons/NukeStudioApp48.png    
+#############################################################
+    - name: create desktop icon for nuke X
+      blockinfile:
+       create: yes
+       dest: /usr/share/applications/NukeX.desktop
+       content: |
+         [Desktop Entry]
+         Name=Nukex
+         Comment=Nuke
+         Exec=/usr/local/Nuke13.1v2/Nuke13.1 --nukex
+         Terminal=false
+         Type=Application
+         Categories=Qt;Graphics;3DGraphics;
+         Icon=/usr/local/Nuke13.1v2/plugins/icons/NukeXApp48.png
+
+
+

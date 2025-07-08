@@ -1,0 +1,19 @@
+---
+- hosts: afx
+  vars_files:
+    - vault.yml
+  tasks:
+    - name: Get list of users excluding specific users
+      shell: "ls /Users | grep -Ev 'shared|wltadmin|wltsupport'"
+      register: user_list
+
+    - name: Check font count for each user
+      shell: "ls /Users/{{ item }}/Library/Fonts/ 2>/dev/null | wc -l"
+      loop: "{{ user_list.stdout_lines }}"
+      register: font_counts
+
+    - name: Print font counts for each user
+      debug:
+        msg: "User {{ item.item }} has {{ item.stdout }} fonts"
+      loop: "{{ font_counts.results }}"
+

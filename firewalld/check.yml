@@ -1,0 +1,15 @@
+---
+- name: List Firewalld Rules on Remote Host
+  hosts: linux
+  remote_user: root
+  become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3.9  # Force Python 3 on the remote host
+  tasks:
+    - name: List All Firewalld Rules
+      command: firewall-cmd --list-all
+      register: firewall_rules
+
+    - name: Display Firewalld Rules
+      debug:
+        var: firewall_rules.stdout_lines

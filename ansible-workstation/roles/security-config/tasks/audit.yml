@@ -1,0 +1,16 @@
+---
+- name: Copy all Rules files
+  copy:
+    src: "{{ item }}"
+    dest: /etc/audit/rules.d/
+    mode: '0600'
+  loop:
+    - config_changes.rules
+    - identity.rules
+    - network_config.rules
+    - package_management.rules
+  register: rule_files
+
+- name: Load Audit rules
+  command: augenrules --load
+  when: rule_files.changed

@@ -1,0 +1,68 @@
+---
+- hosts: all
+  gather_facts: no
+  vars_files:
+    - vault.yml
+  tasks:
+    - name: Copy plugin files to Adobe After Effects Plug-ins folder
+      become: yes
+      become_user: root
+      become_method: su
+      copy:
+        src: /Volumes/smoke/Personal/jk/2024_SOFT/MAC/Plugins/AE_SCRIPT/network/plugin_network/
+        dest: /Applications/Adobe After Effects 2025/Plug-ins/
+        owner: wltadmin
+        group: everyone
+        mode: '777'
+        remote_src: yes  # Use this to indicate that the source is on the remote host
+      tags:
+        - new
+        - cp
+
+    - name: Change permissions of .plugin files
+      become: yes
+      become_user: root
+      become_method: su
+      shell: chmod -R 777 /Applications/Adobe\ After\ Effects\ 2025/Plug-ins/*.plugin
+      tags:
+        - new
+        - cp
+
+    - name: Remove aescriptsLicensingServer.plist if it exists
+      become: yes
+      become_user: root
+      become_method: su
+      file:
+       path: "/Library/Application Support/aescripts/aescriptsLicensingServer.plist"
+       state: absent
+      ignore_errors: yes
+      tags:
+        - license
+
+    - name: Copy network license tool to /var/tmp
+      become: yes
+      become_user: root
+      become_method: su
+      copy:
+        src: /Volumes/smoke/Personal/jk/2024_SOFT/MAC/Plugins/AE_SCRIPT/network/network_lic_tool/
+        dest: /var/tmp/
+        owner: root
+        group: admin
+        mode: '0755'
+        remote_src: yes  # Use this to indicate that the source is on the remote host
+      tags:
+        - license 
+    - name: Run the license server tool
+      become: yes
+      become_user: root
+      become_method: su
+#      command: /var/tmp/aescriptsLicenseServerTool 172.27.93.117:27500
+      command: /var/tmp/aescriptsLicenseServerTool 172.24.146.100:27100
+      register: license_output
+      tags:
+        - license
+    - name: Print the license tool output
+      debug:
+        msg: "{{ license_output.stdout }}"
+      tags: 
+       - license

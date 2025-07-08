@@ -1,0 +1,3 @@
+---
+- name: Run rmsoft to remove Autodesk products
+  command: "/usr/local/bin/rmsoft -gca"

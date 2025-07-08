@@ -1,0 +1,5 @@
+---
+- name: Install kernel-devel tools
+  dnf:
+    name: kernel-devel
+    state: present

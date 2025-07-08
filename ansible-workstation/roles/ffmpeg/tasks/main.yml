@@ -1,0 +1,5 @@
+---
+- name: Install ffmpeg
+  dnf:
+    name: ffmpeg
+    state: present

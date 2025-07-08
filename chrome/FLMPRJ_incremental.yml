@@ -1,0 +1,44 @@
+---
+- name: Deploy backup.sh (incremental, mtime-based) and add cron job for daily backup
+  hosts: linux
+  remote_user: root
+  gather_facts: false
+  become: yes
+
+  tasks:
+    - name: Deploy backup.sh script to remote host (incremental, mtime-based)
+      copy:
+        content: |
+          #!/bin/bash
+
+          SRC_BASE="/opt/Autodesk/clip/stonefs"
+          DEST_BASE="/mnt/Smoke/Personal/jk/FLB"
+          HOSTNAME=$(hostname)
+          DATE=$(date +'%Y-%m-%d')
+          DEST="$DEST_BASE/$HOSTNAME/$DATE"
+
+          # Ensure destination exists
+          mkdir -p "$DEST"
+
+          # Find and backup only files modified in the last 24 hours
+          for folder in "$SRC_BASE"/*_AUTO_BACKUP; do
+              name=$(basename "$folder")
+              find "$folder" -type f -mtime -1 | while read file; do
+                  # Make sure destination subfolder exists
+                  dest_dir="$DEST/$name/$(dirname "${file#$folder/}")"
+                  mkdir -p "$dest_dir"
+                  cp -a "$file" "$dest_dir/"
+              done
+          done
+
+          echo "Incremental backup for $HOSTNAME on $DATE completed."
+        dest: /usr/local/bin/backup.sh
+        mode: '0755'
+
+    - name: Ensure cron job exists for daily backup at 8:00 PM
+      cron:
+        name: "Incremental backup of _AUTO_BACKUP folders"
+        user: root
+        minute: "30"
+        hour: "19"
+        job: "/usr/local/bin/backup.sh >> /var/log/backup.log 2>&1"

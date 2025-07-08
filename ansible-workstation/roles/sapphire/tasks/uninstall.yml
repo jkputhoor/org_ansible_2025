@@ -1,0 +1,7 @@
+---
+- name: Remove Sapphire OFX
+  dnf:
+    name: "SapphireOFX-{{ sapphire_version}}.x86_64"
+    state: absent
+    disable_gpg_check: true
+  when: sapphire_ofx_installed.rc == 0

@@ -1,0 +1,53 @@
+# Rocky-Sources.repo
+
+[baseos-source]
+name=Rocky Linux 8.7 - BaseOS - Source
+baseurl=http://dl.rockylinux.org/vault/rocky/8.7/BaseOS/source/tree/
+gpgcheck=1
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rockyofficial
+
+[appstream-source]
+name=Rocky Linux 8.7 - AppStream - Source
+baseurl=http://dl.rockylinux.org/vault/rocky/8.7/AppStream/source/tree/
+gpgcheck=1
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rockyofficial
+
+#[extras-source]
+#name=Rocky Linux 8.7 - Extras - Source
+#mirrorlist=https://mirrors.rockylinux.org/mirrorlist?arch=source&repo=extras-8.7-source
+baseurl=http://dl.rockylinux.org/vault/rocky/8.7/extras/source/tree/
+#gpgcheck=1
+#enabled=0
+#gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rockyofficial
+
+#[plus-source]
+#name=Rocky Linux 8.7 - Plus - Source
+#mirrorlist=https://mirrors.rockylinux.org/mirrorlist?arch=source&repo=plus-8.7-source
+baseurl=http://dl.rockylinux.org/vault/rocky/8.7/plus/source/tree/
+#gpgcheck=1
+#enabled=0
+#gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rockyofficial
+
+[ha-source]
+name=Rocky Linux 8.7 - High Availability - Source
+baseurl=http://dl.rockylinux.org/vault/rocky/8.7/HighAvailability/source/tree/
+gpgcheck=1
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rockyofficial
+
+[powertools-source]
+name=Rocky Linux 8.7 - PowerTools - Source
+baseurl=http://dl.rockylinux.org/vault/rocky/8.7/PowerTools/source/tree/
+gpgcheck=1
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rockyofficial
+
+[resilient-storage-source]
+name=Rocky Linux 8.7 - Resilient Storage - Source
+baseurl=http://dl.rockylinux.org/vault/rocky/8.7/ResilientStorage/source/tree/
+gpgcheck=1
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rockyofficial
+

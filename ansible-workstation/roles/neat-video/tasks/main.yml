@@ -1,0 +1,23 @@
+---
+- name: Check if Neat Video 5 is present
+  stat:
+    path: "/usr/local/Neat Video v5 OFX/NeatVideo5.ofx.bundle"
+  register: neat_video_installed
+
+- name: Install Neat Video 5 OFX
+  command: "/repo/neat-video/NeatVideo5OFX.Studio.Intel64.run --mode silent"
+  when: not neat_video_installed.stat.exists
+  register: installing_neat
+
+- name: Create ABSoft license directory
+  file:
+    path: "/home/flame2024/.local/share/ABSoft/NeatVideo5-OFX/RLM/"
+    state: directory
+    mode: 0777
+  when: installing_neat.changed
+
+- name: Copy client license file
+  copy:
+    src: neatclient.lic
+    dest: "/home/flame2024/.local/share/ABSoft/NeatVideo5-OFX/RLM/neatclient.lic"
+  when: installing_neat.changed

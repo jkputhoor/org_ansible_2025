@@ -1,0 +1,51 @@
+- name: Change ownership on init.cfg so that it is overwritable
+  file:
+    path: "/opt/Autodesk/flame_{{ flame_version }}/cfg/init.cfg"
+    owner: "{{ owner }}"
+    group: root
+
+- name: Create installation folder for flame_launcher
+  file:
+    path: /usr/local/flame_launcher
+    owner: "{{ owner }}"
+    group: "{{ group }}"
+    state: directory
+
+- name: Copy flame_launcher files
+  copy:
+    src: "{{ item }}"
+    dest: "/usr/local/flame_launcher/{{ item }}"
+    owner: "{{ owner }}"
+    group: "{{ group }}"
+  loop:
+    - AJA.cfg
+    - BMD.cfg
+    - Remote.cfg
+    - flame-launcher.sh
+
+- name: Set flame-launcher as executable
+  file:
+    path: /usr/local/flame_launcher/flame-launcher.sh
+    mode: '0755'
+
+- name: Copy desktop launchers
+  copy:
+    src: "{{ item }}"
+    dest: "/usr/share/applications/{{ item }}"
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - flame_{{ flame_version }}_remote.desktop
+    - flame_{{ flame_version }}_broadcast.desktop
+
+- name: Copy launcher icons
+  copy:
+    src: "{{ item }}"
+    dest: "/usr/share/pixmaps/{{ item }}"
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - flame_{{ flame_version }}_remote.png
+    - flame_{{ flame_version }}_broadcast.png

@@ -1,0 +1,50 @@
+---
+- name: Manage Firewall on Rocky Linux
+  hosts: linux
+  remote_user: root
+  gather_facts: false
+  become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3.9  # Force Python 3 on the remote host
+  tasks:
+    - name: Check firewall status
+      command: firewall-cmd --state
+      register: firewall_status
+      ignore_errors: yes
+
+    - name: Display firewall status
+      debug:
+        msg: "Firewall status: {{ firewall_status.stdout }}"
+
+    - name: List all open ports
+      command: firewall-cmd --list-ports
+      register: open_ports
+
+    - name: Display open ports
+      debug:
+        msg: "Open ports: {{ open_ports.stdout }}"
+
+    - name: List all allowed services
+      command: firewall-cmd --list-services
+      register: allowed_services
+
+    - name: Display allowed services
+      debug:
+        msg: "Allowed services: {{ allowed_services.stdout }}"
+
+    - name: List all allowed hosts
+      command: firewall-cmd --list-sources
+      register: allowed_hosts
+
+    - name: Display allowed hosts
+      debug:
+        msg: "Allowed hosts: {{ allowed_hosts.stdout }}"
+
+    - name: List all denied hosts
+      command: firewall-cmd --list-rich-rules
+      register: denied_hosts
+
+    - name: Display denied hosts
+      debug:
+        msg: "Denied hosts: {{ denied_hosts.stdout }}"
+

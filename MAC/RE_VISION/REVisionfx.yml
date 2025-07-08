@@ -1,0 +1,78 @@
+---
+- hosts: all
+  gather_facts: no
+  vars_files:
+    - vault.yml
+
+  tasks:
+    - name: Mount the RSMB6AE installer volume
+      command: hdiutil attach /Volumes/smoke/Personal/jk/2024_SOFT/MAC/Plugins/REVISIONFX/RSMB6AEInstaller.dmg
+      register: mount_rsmbeae
+      ignore_errors: true
+
+    - name: Check if the RSMB6AE volume was mounted
+      stat:
+        path: /Volumes/ReelSmart Motion Blur v6 for After Effects and Premiere Pro
+      register: rsmbeae_volume_stat
+
+    - name: Debug output for RSMB6AE mount
+      debug:
+        msg: "RSMB6AE volume mounted: {{ rsmbeae_volume_stat.stat.exists }}"
+
+    - name: Mount the Twixtor7AE installer volume
+      command: hdiutil attach /Volumes/smoke/Personal/jk/2024_SOFT/MAC/Plugins/REVISIONFX/Twixtor7AEInstaller.dmg
+      register: mount_twixtor
+      ignore_errors: true
+      tags:
+       - twixtor
+
+    - name: Check if the Twixtor7AE volume was mounted
+      stat:
+        path: /Volumes/Twixtor v7 for After Effects and Premiere Pro
+      register: twixtor_volume_stat
+      tags:
+       - twixtor
+
+    - name: Debug output for Twixtor7AE mount
+      debug:
+        msg: "Twixtor7AE volume mounted: {{ twixtor_volume_stat.stat.exists }}"
+      tags:
+       - twixtor
+    - name: Install RSMB6AE
+      command: /Volumes/ReelSmart\ Motion\ Blur\ v6\ for\ After\ Effects\ and\ Premiere\ Pro/RSMB6AE-6.4.3-osx-installer.app/Contents/MacOS/installbuilder.sh --mode unattended --unattendedmodeui none --acceptEULA 1
+      when: rsmbeae_volume_stat.stat.exists
+
+    - name: Install Twixtor7AE
+      command: /Volumes/Twixtor\ v7\ for\ After\ Effects\ and\ Premiere\ Pro/Twixtor7AE-7.5.6-osx-installer.app/Contents/MacOS/installbuilder.sh --mode unattended --unattendedmodeui none --acceptEULA 1
+      when: twixtor_volume_stat.stat.exists
+      tags:
+       - twixtor
+    - name: Copy contents of LIC directory to REVisionEffects
+      copy:
+        src: /Users/jayaput/Documents/ansible/MAC/RE_VISION/LIC/
+        dest: /Applications/REVisionEffects/
+        remote_src: no
+        mode: preserve  # Preserves file permissions
+        directory_mode: '0755'  # Set permissions for directories
+      become: yes
+      tags:
+        - copy_lic_contents
+        - twixtor
+
+
+    - name: Ensure proper permissions for the REVisionEffects bin directory
+      file:
+        path: /Applications/REVisionEffects/bin/
+        mode: '0755'
+        recurse: yes
+      become: yes
+
+    - name: Run the rvlsetserver command
+      command: ./rvlsetserver 172.24.146.100
+      args:
+        chdir: /Applications/REVisionEffects/bin/
+      become: yes
+      tags: 
+        - run_lic_tool
+        - twixtor
+

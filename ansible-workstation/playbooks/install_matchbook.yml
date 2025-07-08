@@ -1,0 +1,10 @@
+---
+- hosts: dev-lon
+  roles:
+    - role: smoke-repo
+      vars:
+        do: link
+    - role: logik-matchbook
+    - role: smoke-repo
+      vars:
+        do: unlink

@@ -1,0 +1,50 @@
+---
+- name: Check license status
+  hosts: license
+  remote_user: root
+  gather_facts: no
+  become: yes
+  tasks:
+    - name: Check Genarts license
+      shell: "/usr/borisfx/rlm/rlmutil rlmstat -a -c /usr/borisfx/rlm/*.lic | grep -i inuse"
+      register: genarts_license_output
+    - debug:
+        var: genarts_license_output.stdout_lines
+
+    - name: Check Neat Video license
+      shell: "/opt/neatvideo/rlmutil rlmstat -a | grep -i inuse"
+      register: neat_video_license_output
+    - debug:
+        var: neat_video_license_output.stdout_lines
+
+    - name: Restart Houdini license service
+      shell: "/etc/init.d/sesinetd restart"
+      register: houdini_restart_output
+    - debug:
+        var: houdini_restart_output.stdout_lines
+
+    - name: Print Houdini license status
+      shell: "/usr/lib/sesi/sesictrl print-license"
+      register: houdini_license_output
+    - debug:
+        var: houdini_license_output.stdout_lines
+
+    - name: Check adsk Arnold license
+      shell: "/opt/flexnetserver/lmutil lmstat -a -c /opt/flexnetserver/adsk_server.lic | grep use"
+      register: adsk_arnold_license_output
+    - debug:
+        var: adsk_arnold_license_output.stdout_lines
+
+    - name: Check aescripts-License-Server service status
+      shell: "systemctl status aescripts-License-Server.service"
+      register: aescripts_license_server_output
+    - debug:
+        var: aescripts_license_server_output.stdout_lines
+
+    - name: Check Chaos web page
+      uri:
+        url: "http://172.27.93.117:30304/#/"
+      register: chaos_web_page_output
+    - debug:
+        var: chaos_web_page_output
+

@@ -1,0 +1,36 @@
+---
+- name: install chrome
+  hosts: linux
+  remote_user: root
+  gather_facts: false
+  become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3  # Force Python 3 on the remote host
+  vars_files:
+    - source_path.yml
+  tasks:
+    - name: check installer available
+      stat:
+        path: "{{ path }}"
+      register: rpm
+
+    - name: copying file with playbook
+      copy:
+        src: "{{ source }}"
+        dest: "{{ path }}"
+        remote_src: yes
+        mode: '0755'
+      when: not rpm.stat.exists
+
+    - name: Install package
+      yum:
+        name: /var/tmp/google-chrome-stable_current_x86_64.rpm
+        state: present
+
+    - name: replace line in google-chrome file
+      lineinfile:
+        path: /opt/google/chrome/google-chrome
+        regexp: '^(.*)exec -a(.*)$'
+        line: 'exec -a "$0" "$HERE/chrome" "$@" "--password-store=basic"'
+        backrefs: yes
+

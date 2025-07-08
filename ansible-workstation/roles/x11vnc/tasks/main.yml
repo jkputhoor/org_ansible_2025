@@ -1,0 +1,5 @@
+---
+- name: Install x11vnc
+  dnf:
+    name: x11vnc
+    state: present

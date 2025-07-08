@@ -1,0 +1,18 @@
+---
+- hosts: india
+  roles:
+    - role: smoke-repo
+      vars:
+        do: link
+#    - role: autofs
+    - role: alertlogic
+      vars:
+        do: install
+    - role: manage-engine
+      vars:
+        api_key: '1003.ccdeda22645bddee2f257f778ea250e8.5f83c8d05bb96b141ff8d7bc0629ffae'
+        cron_hour: 14
+        cron_minute: 0
+    - role: smoke-repo
+      vars:
+        do: unlink

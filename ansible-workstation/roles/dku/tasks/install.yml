@@ -1,0 +1,8 @@
+---
+- name: Install DKU
+  command: "/repo/autodesk/dku/DKU_{{version}}/INSTALL_DKU --silentgeneric"
+  register: install_dku
+
+- name: Reboot after DKU
+  reboot:
+    msg: "Rebooting after installing DKU"

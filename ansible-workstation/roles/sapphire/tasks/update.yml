@@ -1,0 +1,4 @@
+---
+- name: Update Sapphire OFX
+  command: "rpm -Uf /repo/borisfx/sapphire/SapphireOFX-{{ sapphire_version }}.x86_64.rpm --nopost"
+  when: sapphire_version.split('-')[0] | int > current_sapphire_ofx_version | int

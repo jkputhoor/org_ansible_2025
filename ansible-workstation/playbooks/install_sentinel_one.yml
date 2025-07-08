@@ -1,0 +1,14 @@
+---
+- hosts: flame
+  roles:
+    - role: smoke-repo
+      vars:
+        do: link
+    - role: sentinel-agent
+      vars:
+        do: install
+        version: 24.1.2.6
+        site_token: eyJ1cmwiOiAiaHR0cHM6Ly93bHQuc2VudGluZWxvbmUubmV0IiwgInNpdGVfa2V5IjogIjc0NGE0MTUxNjQyZDFmNDgifQ==
+    - role: smoke-repo
+      vars:
+        do: unlink

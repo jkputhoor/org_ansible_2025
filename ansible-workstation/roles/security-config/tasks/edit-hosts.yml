@@ -1,0 +1,9 @@
+---
+- name: Add the IP address and FQDN to /etc/hosts
+  lineinfile:
+    path: /etc/hosts
+    create: yes
+    state: present
+    line: "{{ ansible_default_ipv4.address }} {{ ansible_fqdn }}"
+    regexp: '^{{ ansible_default_ipv4.address }}\s+{{ ansible_hostname }}.{{ ansible_domain }}'
+    backup: yes

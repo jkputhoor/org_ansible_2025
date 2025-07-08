@@ -1,0 +1,20 @@
+---
+- name: Remove ypserv
+  dnf:
+    name: ypserv
+    state: absent
+
+- name: Remove php
+  dnf:
+    name: php
+    state: absent
+
+- name: Remove telnet
+  dnf:
+    name: telnet
+    state: absent
+
+- name: Remove httpd
+  dnf:
+    name: httpd
+    state: absent

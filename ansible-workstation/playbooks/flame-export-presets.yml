@@ -1,0 +1,4 @@
+---
+- hosts: london
+  roles:
+    - role: flame-export-presets

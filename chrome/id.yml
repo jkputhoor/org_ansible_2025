@@ -1,0 +1,28 @@
+---
+- name: Check for users starting with 'flame'
+  hosts: linux
+  remote_user: root
+  become: yes
+  gather_facts: false
+
+  tasks:
+    - name: Search for users starting with 'flame'
+      command: "grep '^flame' /etc/passwd"
+      register: flame_users
+      ignore_errors: yes
+      tags: check
+
+    - name: Display systems with 'flame' users
+      debug:
+        msg: |
+          The following 'flame' users were found on {{ inventory_hostname }}:
+          {{ flame_users.stdout_lines }}
+      when: flame_users.rc == 0
+      tags: check
+
+    - name: Display systems without 'flame' users
+      debug:
+        msg: "'flame' users not found on {{ inventory_hostname }}"
+      when: flame_users.rc != 0
+      tags: check
+

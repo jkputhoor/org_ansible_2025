@@ -1,0 +1,12 @@
+---
+- name: Install target Sentinel Agent version
+  dnf:
+    name: /repo/sentinel-agent/SentinelAgent_linux_x86_64_v{{ version }}.rpm
+    state: present
+    disable_gpg_check: true
+  when: sentinel_agent_installed.rc != 0
+  register: stage1
+
+- name: Run configuration tasks
+  include_tasks: configure.yml
+  when: stage1.changed

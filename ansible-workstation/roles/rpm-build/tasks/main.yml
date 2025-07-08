@@ -1,0 +1,5 @@
+---
+- name: Install rpm-build
+  dnf:
+    name: rpm-build
+    state: present

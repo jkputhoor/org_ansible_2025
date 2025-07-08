@@ -1,0 +1,23 @@
+---
+- name: Install desktopvideo
+  dnf:
+    name: /repo/blackmagic/desktopvideo-{{ desktopvideo_version }}.x86_64.rpm
+    state: present
+    disable_gpg_check: true
+  when:
+    - desktopvideo_installed.stdout is undefined or desktopvideo_installed.stdout == ''
+    - blackmagic_card.stdout != ''
+  register: stage1
+
+- name: Install desktopvideo-gui
+  dnf:
+    name: /repo/blackmagic/desktopvideo-gui-{{ desktopvideo_version }}.x86_64.rpm
+    state: present
+    disable_gpg_check: true
+  when: stage1.changed
+  register: stage2
+
+- name: Reboot after install
+  reboot:
+    msg: "Rebooting after installing desktopvideo"
+  when: stage1.changed or stage2.changed

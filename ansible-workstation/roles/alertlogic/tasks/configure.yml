@@ -1,0 +1,18 @@
+---
+- name: Configure AlertLogic Appliance IP
+  command: "/var/alertlogic/lib/agent/bin/al-agent configure --host {{ app_ip }}"
+
+- name: Configure AlertLogic provisioning provisioning key
+  command: "/var/alertlogic/lib/agent/bin/al-agent provision --key {{ reg_key }}"
+
+- name: Ensure rsyslog contains entry for alertlogic
+  lineinfile:
+    path: /etc/rsyslog.conf
+    line: "*.* @@127.0.0.1:1514;RSYSLOG_FileFormat"
+    state: present
+    create: yes
+  register: rsyslogconf
+
+- name: Restart rsyslog if rsyslog.conf changed
+  command: "systemctl restart rsyslog.service"
+  when: rsyslogconf.changed

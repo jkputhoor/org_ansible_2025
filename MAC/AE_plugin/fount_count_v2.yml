@@ -1,0 +1,28 @@
+---
+- hosts: afx
+  vars_files:
+    - vault.yml
+  tasks:
+    - name: Get list of users excluding specific users
+      shell: "ls /Users | grep -Ev 'shared|wltadmin|wltsupport|.localized|Shared'"
+      register: user_list
+
+    - name: Check font count for each user
+      shell: "ls /Users/{{ item }}/Library/Fonts/ 2>/dev/null | wc -l"
+      loop: "{{ user_list.stdout_lines }}"
+      register: font_counts
+
+    - name: Print results for each user in a formatted way
+      block:
+        - name: Set hostname fact
+          set_fact:
+            hostname: "{{ ansible_hostname }}"
+
+        - name: Format and print results
+          debug:
+            msg: |
+              Hostname: {{ hostname }}
+              {% for result in font_counts.results %}
+              User: {{ result.item }} | Font Count: {{ result.stdout|trim }}
+              {% endfor %}
+

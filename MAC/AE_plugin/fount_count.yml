@@ -1,0 +1,13 @@
+---
+- hosts: afx
+  vars_files:
+    - vault.yml
+  tasks:
+    - name: Check font count
+      shell: "ls /Library/Fonts/ | wc -l"
+      register: count
+
+    - name: Print the font count
+      debug:
+        var: count.stdout
+

@@ -1,0 +1,17 @@
+- name: rqm query 
+  hosts: linux
+  remote_user: root
+  gather_facts: false
+  become: yes
+  tasks:
+   - name: test wacom RPM installed or not 
+     shell: "rpm -qa |grep flameassist"
+     register: rpmlist
+   - name: RPM INFO 
+     debug:
+       msg: 
+         - " {{ rpmlist.stdout_lines }}"
+#         - " {{ rpmlist.stdout }} "
+#       var:  rpmlist
+
+    

@@ -1,0 +1,74 @@
+---
+# Section for configuring the internal framestore
+- name: Check for all local storage devices
+  shell: "lsblk -b -o NAME,SIZE | sed 's/[└├]//' | sed 's/─//;'"
+  register: drive_check
+  changed_when: false
+
+- name: Set drive name
+  set_fact:
+    drive_name: "{{ item.split()[0] }}"
+  loop: "{{ drive_check.stdout_lines }}"
+  when: item.split()[1] | int > 3000000000000
+
+- name: Get UUID of the device
+  command: "blkid -s UUID -o value /dev/{{ drive_name }}"
+  register: device_uuid
+  changed_when: false
+
+- name: Add mount to fstab
+  mount:
+    path: /mnt/StorageMedia
+    src: "UUID={{ device_uuid.stdout }}"
+    fstype: ext4
+    opts: rw,noatime,nofail
+    state: present
+  register: fstab
+
+- name: Mount storagemedia
+  command: "mount -a"
+  when: fstab.changed
+  
+- name: Ensure correct filepath to framestore exists
+  file:
+    path: "/mnt/StorageMedia/{{ inventory_hostname_short }}/AutodeskMediaStorage0"
+    owner: flame2024
+    mode: '0777'
+    state: directory
+
+- name: Configure Partition0 for correct framestore
+  blockinfile:
+    path: "/opt/Autodesk/sw/cfg/stone+wire.cfg"
+    block: |
+      [Partition0]
+      Name={{ inventory_hostname_short }}
+      Path=/mnt/StorageMedia/{{ inventory_hostname_short }}/AutodeskMediaStorage0
+  register: partition0
+
+- name: Restart adsk_sw
+  systemd_service:
+    state: restarted
+    name: adsk_sw
+  when: partition0.changed
+
+# Set framestore ID for stone and wire
+- name: Get ip address
+  command: "hostname -i"
+  register: ip_output
+  changed_when: false
+
+- name: Set framestore_id from last octet of IP address
+  set_fact:
+    framestore_id: "{{ ip_output.stdout.split('.')[-1] | int }}"
+
+- name: Get current configured framestore id
+  command: "grep '^ID=' /opt/Autodesk/sw/cfg/sw_storage.cfg"
+  register: current_id
+  changed_when: false
+
+- name: Ensure current_id matches framestore_id
+  lineinfile:
+    path: /opt/Autodesk/sw/cfg/sw_storage.cfg
+    regexp: '^ID='
+    line: "ID={{ framestore_id }}"
+  when: current_id.stdout.split('=')[1] | int != framestore_id

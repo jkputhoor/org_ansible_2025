@@ -1,0 +1,29 @@
+---
+- name: Check license status
+  hosts: license
+  remote_user: root
+  gather_facts: no
+  become: yes
+  tasks:
+    - name: Check Genarts license
+      shell: "/usr/borisfx/rlm/rlmutil rlmstat -a -c /usr/borisfx/rlm/*.lic | grep -i inuse"
+
+    - name: Check Neat Video license
+      shell: "/opt/neatvideo/rlmutil rlmstat -a | grep -i inuse"
+
+    - name: Restart Houdini license service
+      shell: "/etc/init.d/sesinetd restart"
+
+    - name: Print Houdini license status
+      shell: "/usr/lib/sesi/sesictrl print-license"
+
+    - name: Check adsk Arnold license
+      shell: "/opt/flexnetserver/lmutil lmstat -a -c /opt/flexnetserver/adsk_server.lic | grep use"
+
+    - name: Check aescripts-License-Server service status
+      shell: "systemctl status aescripts-License-Server.service"
+
+    - name: Check Chaos web page
+      uri:
+        url: "http://172.27.93.117:30304/#/"
+

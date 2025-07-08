@@ -1,0 +1,46 @@
+---
+- name: Deploy backup.sh and add cron job for daily backup
+  hosts: linux
+  remote_user: root
+  gather_facts: false
+  become: yes
+
+  tasks:
+    - name: Deploy backup.sh script to remote host
+      copy:
+        content: |
+          #!/bin/bash
+
+          SRC_BASE="/opt/Autodesk/clip/stonefs"
+          DEST_BASE="/mnt/Smoke/Personal/jk/FLB"
+          HOSTNAME=$(hostname)
+          DATE=$(date +'%Y-%m-%d')
+
+          DEST="$DEST_BASE/$HOSTNAME/$DATE"
+
+          # Check if destination is available
+          if [ ! -d "$DEST_BASE" ]; then
+              echo "Destination base $DEST_BASE not mounted or unavailable. Skipping backup."
+              exit 1
+          fi
+
+          # Create hostname and date folders if not present
+          mkdir -p "$DEST"
+
+          # Find all directories in $SRC_BASE ending with _AUTO_BACKUP and copy them
+          find "$SRC_BASE" -maxdepth 1 -type d -name "*_AUTO_BACKUP" | while read backupdir; do
+              echo "Backing up $backupdir to $DEST"
+              cp -a "$backupdir" "$DEST/"
+          done
+
+          echo "Backup complete for $HOSTNAME on $DATE"
+        dest: /usr/local/bin/backup.sh
+        mode: '0755'
+
+    - name: Ensure cron job exists for daily backup at 7:45 PM
+      cron:
+        name: "Daily backup of _AUTO_BACKUP folders"
+        user: root
+        minute: "00"
+        hour: "20"
+        job: "/usr/local/bin/backup.sh >> /var/log/backup.log 2>&1"

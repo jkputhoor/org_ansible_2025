@@ -1,0 +1,5 @@
+---
+- name: Install GCC
+  dnf:
+    name: gcc
+    state: present

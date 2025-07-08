@@ -1,0 +1,20 @@
+---
+- name: Install Sapphire OFX
+  command: "rpm -if /repo/borisfx/sapphire/SapphireOFX-{{ sapphire_version }}.x86_64.rpm --nopost"
+  when: sapphire_ofx_installed.rc != 0
+
+- name: Define SapphireOFX floating license
+  copy:
+    src: SapphireOFX.lic
+    dest: /usr/genarts/rlm/SapphireOFX.lic
+
+- name: Create OFX folder
+  file:
+    path: /usr/OFX/Plugins
+    state: directory
+
+- name: Create symlink to Sapphire plugin
+  file:
+    src: "/opt/BorisFX/SapphireOFX/Sapphire.ofx.bundle"
+    dest: /usr/OFX/Plugins/Sapphire.ofx.bundle
+    state: link

@@ -1,0 +1,17 @@
+---
+- name: Install Alertlogic RPM
+  dnf:
+    name: /repo/alertlogic/al-agent-LATEST-1.x86_64.rpm
+    state: present
+    disable_gpg_check: true
+  register: alertlogic_installer
+  when: current_alertlogic_version == ''
+
+- name: Configure Alertlogic
+  include_tasks: configure.yml
+  register: alertlogic_configure
+  when: alertlogic_installer.changed
+
+- name: Start AlertLogic
+  command: "/etc/init.d/al-agent start"
+  ignore_errors: true

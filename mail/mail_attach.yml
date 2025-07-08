@@ -1,0 +1,20 @@
+- name: Sending an e-mail using Gmail SMTP servers with attachment
+  hosts: localhost
+  vars_files:
+    - vars01.yml
+
+  tasks:
+    - name: Sending an e-mail using Gmail SMTP servers with attachment
+      community.general.mail:
+        host: smtp.gmail.com
+        port: 587
+        username: "{{ gmail_username }}"
+        password: "{{ gmail_password }}"
+        to: JK <jayakrishnan.puthoor@tagww.com>
+        subject: Ansible-report
+        body: System {{ ansible_hostname }} has been successfully provisioned.
+        attach:
+          - /Users/jayaput/Documents/media_details/14052024_1715699467.txt
+        secure: starttls
+      delegate_to: localhost
+

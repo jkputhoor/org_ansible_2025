@@ -1,0 +1,25 @@
+# tasks file for lb
+---
+- name: Install Nginx on load balancer
+  package:
+    name: nginx
+    state: present
+  register: libinstall
+
+- name: Debug message if nginx installation is successful
+  debug:
+    msg: "Nginx installed successfully"
+  when: libinstall is defined and not libinstall.failed
+
+- name: Configure Load Balancer (nginx)
+  template:
+    src: "lb_conf_nginx.j2"
+    dest: "/etc/nginx/conf.d/reverse-proxy.conf"
+  notify: restart nginx
+
+- name: Start Nginx service
+  service:
+    name: nginx
+    state: started
+  when: not libinstall.failed
+

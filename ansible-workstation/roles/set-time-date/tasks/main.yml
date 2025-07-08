@@ -1,0 +1,7 @@
+---
+- name: Ensure timezone is London
+  timezone:
+      name: Europe/London
+
+- name: Turn on ntp
+  command: "timedatectl set-ntp on"

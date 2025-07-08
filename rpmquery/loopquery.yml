@@ -1,0 +1,32 @@
+- name: rqm query 
+  hosts: linux
+  remote_user: root
+#  gather_facts: false
+  become: yes
+  tasks:
+   - name: test wacom RPM installed or not 
+     shell: "rpm -qa |grep {{ item }}"     
+     register: rpmlist
+     loop:
+       - wacom
+       - flame
+     throttle: 1
+
+   - name: RPM INFO
+########################################################################## 
+#     debug:
+#        msg: "{{rpmlist}}" 
+#####################################
+     debug:  msg={{ item.stdout_lines }}
+     loop: "{{ rpmlist.results }}"
+######################################
+#       msg:  " {{ rpmlist.results|map(attribute='stdout_lines')|list }} "
+###########################################################################
+   - name: save output
+     ansible.builtin.lineinfile:
+       line: "{{ ansible_hostname }} \n  {{item.stdout_lines}}"
+       path: /mnt/Smoke/Personal/JK/test.log 
+       create: yes
+     loop: "{{ rpmlist.results }}"
+     throttle: 1
+############################################################################

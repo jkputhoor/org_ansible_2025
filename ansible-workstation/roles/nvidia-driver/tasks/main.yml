@@ -1,0 +1,10 @@
+---
+- name: Check for NVidia driver
+  shell: "modinfo nvidia | grep -w 'version:' | sed 's/version://' | sed 's/ //g'"
+  register: nvidia_version
+  changed_when: false
+  failed_when: false
+
+- name: Install NVidia compatibility driver
+  command: "/repo/nvidia/NVIDIA-Linux-x86_64-470.256.02.run --silent"
+  when: gpu == 'K6000' and nvidia_version.stdout != '470.256.02'

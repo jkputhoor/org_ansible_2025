@@ -1,0 +1,60 @@
+---
+- name: Install Mocha Pro 2025 on macOS
+  hosts: all
+  gather_facts: no
+  vars_files:
+    - vault.yml  # Ensure this file contains sensitive variables
+  tasks:
+
+    - name: Mount the Mocha Pro DMG
+      become: yes
+      become_user: root
+      become_method: su
+      command: hdiutil attach /Volumes/smoke/Personal/jk/2024_SOFT/MAC/Plugins/AE_SCRIPT/network/app_network/MochaPro2025-Adobe-12.0.1-46.g8b4c8cfd3c12.mac.dmg
+      register: mount_output
+      ignore_errors: yes
+      changed_when: "'MochaPro2025Installer' in mount_output.stdout"
+      tags:
+        - mount
+        - install
+
+    - name: Verify mounted volume Mocha Pro 2025
+      become: yes
+      become_user: root
+      become_method: su
+      command: ls /Volumes/MochaPro2025-Adobe-12.0.1-46.g8b4c8cfd3c12.mac
+      register: verify_volume
+      changed_when: false
+      tags:
+        - install
+
+    - name: Install Mocha Pro 2025 package
+      become: yes
+      become_user: root
+      become_method: su
+      command: installer -pkg /Volumes/MochaPro2025-Adobe-12.0.1-46.g8b4c8cfd3c12.mac/MochaPro2025-Adobe.pkg -target /
+      register: install_output
+      ignore_errors: yes
+      changed_when: "'successfully installed' in install_output.stdout"
+      tags:
+        - install
+
+    - name: Unmount the Mocha Pro DMG after installation
+      become: yes
+      become_user: root
+      become_method: su
+      command: hdiutil detach /Volumes/MochaPro2025-Adobe-12.0.1-46.g8b4c8cfd3c12.mac
+#      when: install_output is succeeded
+      ignore_errors: yes
+      tags:
+        - install
+    - name: Create SapphireAE license file
+      become: yes
+      become_user: root
+      become_method: su
+      copy:
+        dest: /Library/Application Support/GenArts/rlm/SapphireAE.lic
+        content: "HOST 172.24.146.100 5053"
+      tags:
+        - install
+        - license

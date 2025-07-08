@@ -1,0 +1,19 @@
+---
+- name: Add Tenable GPG key
+  hosts: linux
+  remote_user: root
+  become: yes
+  vars_files:
+    - source_path.yml
+  tasks:
+    - name: Copy GPG key file to target host
+      copy:
+       src: "{{ source_path }}/tenable-4096.gpg"
+       dest: "/tmp/tenable-4096.gpg"
+       remote_src: yes
+    - name: Import GPG key
+      rpm_key:
+        state: present
+        key: "/tmp/tenable-4096.gpg"
+
+

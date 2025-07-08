@@ -1,0 +1,24 @@
+---
+- hosts: all
+  gather_facts: no
+  vars_files:
+    - vault.yml
+  tasks:
+    - name: Copy plugin files to Adobe After Effects Plug-ins folder
+      become: yes
+      become_user: root
+      become_method: su
+      copy:
+        src: /Volumes/smoke/Personal/jk/2024_SOFT/MAC/Plugins/test
+        dest: /Applications/Adobe After Effects 2024/Plug-ins/
+        owner: wltadmin
+        group: everyone
+        mode: '777'
+        remote_src: yes  # Use this to indicate that the source is on the remote host
+
+    - name: Change permissions of .plugin files
+      become: yes
+      become_user: root
+      become_method: su
+      shell: chmod -R 777 /Applications/Adobe\ After\ Effects\ 2024/Plug-ins/*.plugin
+

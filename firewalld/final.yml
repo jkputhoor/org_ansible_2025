@@ -1,0 +1,97 @@
+---
+- name: Configure Firewalld on Rocky Linux
+  hosts: linux
+  remote_user: root
+  gather_facts: true  # Necessary for ansible_default_ipv4.address
+  become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3.9
+
+    # Define Allowed Services (Inbound)
+    allowed_services:
+#      - "cockpit"
+#      - "dhcpv6-client"
+      - "mountd"
+      - "nfs"
+      - "rpc-bind"
+      - "ssh"
+
+    # Define Open Ports (Inbound)
+    open_ports:
+      - "7001/udp"
+      - "7001/tcp"
+      - "8244/tcp"
+      - "7261/tcp"
+      - "7000/tcp"
+      - "7428/tcp"
+      - "7549/tcp"
+      - "7550/tcp"
+      - "7183/tcp"
+      - "7184/tcp"
+      - "3234/tcp"
+      - "7347/tcp"
+      - "7348/tcp"
+      - "3233/tcp"
+      - "3232/tcp"
+      - "3231/tcp"
+      - "3230/tcp"
+      - "3229/tcp"
+      - "3228/tcp"
+      - "3227/tcp"
+      - "3226/tcp"
+      - "7555/udp"
+      - "443/tcp"   
+      - "2049/tcp"   
+      - "7700/tcp"   
+
+    # Define IPs to block (excluding local IP)
+    blocked_ips:
+      - "172.24.146.42"
+      - "172.24.146.154"
+      - "172.24.146.152" 
+      - "172.24.146.163" 
+
+  tasks:
+    - name: Start Firewalld
+      command: systemctl start firewalld
+      ignore_errors: yes
+      tags: flame
+
+    - name: Enable Firewalld
+      command: systemctl enable firewalld
+      ignore_errors: yes
+      tags: flame
+
+    - name: Remove all previously allowed services
+      shell: firewall-cmd --zone=public --list-services | xargs -r -n1 firewall-cmd --zone=public --permanent --remove-service
+      ignore_errors: yes
+      tags: flame
+
+    - name: Remove all previously allowed ports
+      shell: firewall-cmd --zone=public --list-ports | xargs -r -n1 firewall-cmd --zone=public --permanent --remove-port
+      ignore_errors: yes
+      tags: flame
+
+    - name: Remove all existing rich rules
+      shell: "firewall-cmd --zone=public --list-rich-rules | while read rule; do firewall-cmd --zone=public --permanent --remove-rich-rule=\"$rule\"; done"
+      ignore_errors: yes
+      tags: flame
+
+    - name: Allow necessary services (Inbound)
+      command: firewall-cmd --zone=public --permanent --add-service={{ item }}
+      loop: "{{ allowed_services }}"
+      tags: flame
+
+    - name: Open necessary ports (Inbound)
+      command: firewall-cmd --zone=public --permanent --add-port={{ item }}
+      loop: "{{ open_ports }}"
+      tags: flame
+
+    - name: Block specific IPs (excluding local IP)
+      command: "firewall-cmd --zone=public --permanent --add-rich-rule='rule family=ipv4 source address={{ item }} drop'"
+      loop: "{{ blocked_ips }}"
+      when: item != ansible_default_ipv4.address
+
+    - name: Reload Firewalld to apply changes
+      command: firewall-cmd --reload
+      tags: flame

@@ -1,0 +1,16 @@
+---
+- name: run commands for hosts
+  hosts: linux
+  remote_user: root
+  gather_facts: false
+  become: yes
+  tasks:
+    - name: check Tenable nessusagent running status 
+      shell: "systemctl status nessusagent.service |  grep Active"
+      register: result
+    - name: show output
+      debug: 
+        var: result.stdout
+    - name: show output
+      debug:
+        msg: Tenable nessusagent:-  {{result.stdout}} this path

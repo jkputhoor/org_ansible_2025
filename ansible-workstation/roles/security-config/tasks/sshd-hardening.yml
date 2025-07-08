@@ -1,0 +1,20 @@
+---
+- name: Copy sshd_config
+  copy:
+    src: sshd_config
+    dest: /etc/ssh/sshd_config
+    mode: '0600'
+  register: sshd
+
+- name: Check sshd config
+  command: sshd -t
+  register: sshd_test
+
+- debug:
+    msg: "{{ sshd_test.stdout }}"
+
+- name: Restart sshd if sshd_test is successful
+  command: systemctl restart sshd
+  when:
+    - sshd_test.stdout == ""
+    - sshd.changed

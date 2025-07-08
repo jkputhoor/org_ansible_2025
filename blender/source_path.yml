@@ -1,0 +1,2 @@
+source: /mnt/Smoke/Personal/jk/linux/blender/blender-4.2.0-linux-x64
+dest: /home/{{ item }}/Documents/blender-4.2.0-linux-x64

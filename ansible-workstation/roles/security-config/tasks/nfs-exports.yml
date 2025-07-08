@@ -1,0 +1,21 @@
+---
+- name: Generate /etc/exports from template
+  template:
+    src: '{{ location }}_exports.j2'
+    dest: /etc/exports
+    owner: root
+    group: root
+    mode: '0644'
+  register: nfs_exports
+
+- name: Apply the NFS exports configuration
+  command: exportfs -ra
+  when: nfs_exports.changed
+
+- name: Verify NFS exports
+  command: exportfs -v
+  register: exportfs_output
+  when: nfs_exports.changed
+
+- debug:
+    msg: "{{ exportfs_output.stdout }}"

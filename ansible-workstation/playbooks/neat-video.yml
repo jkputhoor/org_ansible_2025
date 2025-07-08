@@ -1,0 +1,13 @@
+---
+- hosts: flame
+  roles:
+    - role: smoke-repo
+      vars:
+        do: link
+    - role: neat-video
+      vars:
+        do: install
+        desktopvideo_version: 14.0.1a2
+    - role: smoke-repo
+      vars:
+        do: unlink

@@ -1,0 +1,57 @@
+---
+- name: unmount and shutdown all hosts
+  hosts: Media
+  remote_user: root
+  gather_facts: no
+  become: yes
+  vars:
+    output_dir: "/Users/jayaput/Documents/media_details"
+    timestamp: "{{ lookup('pipe', 'date +%d%m%Y') }}"
+    random_suffix: "{{ lookup('pipe', 'date +%s') }}"
+    access_output_file: "{{ output_dir }}/access_{{ timestamp }}_{{ random_suffix }}.txt"
+    modify_output_file: "{{ output_dir }}/modify_{{ timestamp }}_{{ random_suffix }}.txt"
+  tasks:
+    - name: Run find command for access time and save output to temporary file
+      command: find /packages/ -mindepth 1 -maxdepth 2 -type d -atime +90 -exec du -sh {} \; -exec touch /tmp/dummy.file \;
+      register: find_access_output
+      changed_when: false
+
+    - name: Display find command output for access time
+      debug:
+        msg: "{{ find_access_output.stdout_lines }}"
+
+    - name: Save access time output to Ansible server
+      copy:
+        content: "{{ find_access_output.stdout_lines | join('\n') }}"
+        dest: "{{ access_output_file }}"
+        remote_src: no
+        force: no
+      delegate_to: localhost
+      become: no
+
+    - name: Run find command for modify time and save output to temporary file
+      command: find /packages/ -mindepth 1 -maxdepth 2 -type d -mtime +90 -exec du -sh {} \;
+      register: find_modify_output
+      changed_when: false
+
+    - name: Display find command output for modify time
+      debug:
+        msg: "{{ find_modify_output.stdout_lines }}"
+
+    - name: Save modify time output to Ansible server
+      copy:
+        content: "{{ find_modify_output.stdout_lines | join('\n') }}"
+        dest: "{{ modify_output_file }}"
+        remote_src: no
+        force: no
+      delegate_to: localhost
+      become: no
+
+    - name: Check storage space
+      shell: df -h /packages
+      register: stor
+
+    - name: Print storage space information
+      debug:
+        var: stor.stdout_lines
+

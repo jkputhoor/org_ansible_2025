@@ -1,0 +1,52 @@
+---
+- name: Disable core dumps on Rocky 8.7
+  block:
+    - name: Append core dump limits to /etc/security/limits.conf
+      lineinfile:
+        path: /etc/security/limits.conf
+        line: "{{ item }}"
+        state: present
+      loop:
+        - "* hard core 0"
+        - "* soft core 0"
+
+    - name: Copy 9999-disable-core-dump.conf to /etc/sysctl.d/
+      copy:
+        src: 9999-disable-core-dump.conf
+        dest: /etc/sysctl.d/9999-disable-core-dump.conf
+        mode: '0644'
+      register: sysctl_conf
+
+    - name: Load sysctl settings
+      command: sysctl -p /etc/sysctl.d/9999-disable-core-dump.conf
+      when: sysctl_conf.changed
+
+    - name: Create /etc/systemd/coredump.conf.d/ directory
+      file:
+        path: /etc/systemd/coredump.conf.d/
+        state: directory
+        mode: '0755'
+
+    - name: Copy custom.conf to /etc/systemd/coredump.conf.d/
+      copy:
+        src: custom.conf
+        dest: /etc/systemd/coredump.conf.d/custom.conf
+        mode: '0644'
+      register: custom_conf
+
+    - name: Reload systemd daemon
+      systemd:
+        daemon_reload: yes
+      when: custom_conf.changed
+
+    - name: Comment out DefaultLimitCORE in /etc/systemd/system.conf
+      lineinfile:
+        path: /etc/systemd/system.conf
+        regexp: '^DefaultLimitCORE='
+        line: '#DefaultLimitCORE=0:infinity'
+        backrefs: yes
+      register: system_conf
+
+    - name: Daemon-reexec
+      command: systemctl daemon-reexec
+      when: system_conf.changed

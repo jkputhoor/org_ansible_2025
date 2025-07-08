@@ -1,0 +1,5 @@
+---
+- name: Install ImageMagick
+  dnf:
+    name: ImageMagick
+    state: present

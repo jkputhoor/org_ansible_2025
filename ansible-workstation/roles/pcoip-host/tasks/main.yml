@@ -1,0 +1,16 @@
+---
+- name: Check if workstation has a workstation card
+  shell: "lspci | grep Teradici"
+  register: pcoip_card
+  changed_when: false
+  failed_when: false
+
+- name: Check if pcoip-host driver is installed
+  shell: "rpm -qa | grep pcoip_host"
+  register: current_pcoip_version
+  changed_when: false
+  failed_when: false
+
+- name: What to 'do'
+  include_tasks: "{{ do }}.yml"
+  when: do in ['install', 'update', 'uninstall'] and pcoip_card.rc == 0

@@ -1,0 +1,14 @@
+---
+- name: Check if Burn is installed
+  shell: "rpm -qa | grep autodesk.burn.base"
+  register: burn_installed
+  changed_when: false
+  failed_when: false
+
+- name: Get installed Burn version
+  set_fact:
+    current_burn_version: "{{ burn_installed.stdout.split('-')[1] if burn_installed.rc ==0 else '' }}"
+
+- name: Include specific action tasks based on 'do' parameter
+  include_tasks: "{{ do }}.yml"
+  when: do in ['install', 'update', 'uninstall']

@@ -1,0 +1,18 @@
+---
+- name: run commands for hosts
+  hosts: linux
+  remote_user: root
+  gather_facts: false
+  become: yes
+  tasks:
+    - name: run specific command
+#     command: "df -h|grep -i INMAALPXT.corp.wlt.com"
+      shell: "df -h|grep -i video"
+#      ignore_errors: yes
+      register: result
+    - name: show output
+      debug: 
+        var: result.stdout
+#    - name: show output
+#      debug:
+#        msg: old storage mounted in {{result.stdout}} this path

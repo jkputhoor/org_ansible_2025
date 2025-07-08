@@ -1,0 +1,35 @@
+---
+- name: Enable Powertools
+  community.general.dnf_config_manager:
+    name: powertools
+    state: enabled
+
+- name: Ensure EPEL is installed
+  dnf:
+    name: epel-release
+    state: present
+
+- name: Copy RPM Fusion gpg key
+  copy:
+    src: RPM-GPG-KEY-rpmfusion-free-el-8
+    dest: /root/RPM-GPG-KEY-rpmfusion-free-el-8
+
+- name: Import RPM Fusion gpg key
+  rpm_key:
+    state: present
+    key: /root/RPM-GPG-KEY-rpmfusion-free-el-8
+
+- name: Install RPM Fusion
+  dnf:
+    name: "https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-8.noarch.rpm"
+    state: present
+
+- name: Import Google Chrome repo gpg key
+  rpm_key:
+    state: present
+    key: https://dl.google.com/linux/linux_signing_key.pub
+
+- name: Ensure Google Chrome repo is installed
+  dnf:
+    name: https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+    state: present

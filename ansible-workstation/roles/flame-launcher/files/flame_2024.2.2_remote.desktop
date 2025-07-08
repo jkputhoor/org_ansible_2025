@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name="Flame 2024.2.2 Remote"
+Exec=/bin/bash -c "/usr/local/flame_launcher/flame-launcher.sh -v 2024.2.2 -r true"
+Path=/usr/local/flame_launcher
+Icon=flame_2024.2.2_remote
+Terminal=true
+StartupNotify=false
+Categories=Utility

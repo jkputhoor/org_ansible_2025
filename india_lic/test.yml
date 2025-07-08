@@ -1,0 +1,20 @@
+- name: Check services after reboot
+  hosts: all
+  become: yes
+  tasks:
+    - name: Check if all services are up after reboot
+      command: systemctl list-units --type=service --state=running
+      register: post_reboot_service_status
+
+    - name: Display services after reboot
+      debug:
+        msg: "{{ post_reboot_service_status.stdout_lines }}"
+
+    - name: Check license usage
+      shell: /usr/RLM/x64_l1.admin/rlmutil rlmstat -a -c /mnt/jk/lic/*.lic | grep -E 'inuse: [1-9]'
+      register: used_license_status
+
+    - name: Display used licenses
+      debug:
+        msg: "{{ used_license_status.stdout_lines }}"
+

@@ -1,0 +1,74 @@
+---
+- hosts: london
+  roles:
+    - role: set-time-date
+    - role: flame-user
+    - role: autofs
+# Symlink the installation repo on the Isilon
+    - role: smoke-repo
+      vars:
+        do: link
+    - role: extra-repos
+    - role: x11vnc
+    - role: ffmpeg
+    - role: imagemagick
+    - role: dku
+      vars:
+        do: install
+        version: 19.0.1
+    - role: nvidia-driver
+    - role: flame
+      vars:
+        do: install
+        flame_version: 2024.2.2
+      tags:
+        - flame
+    - role: flame-launcher
+      vars:
+        owner: flame2024
+        group: flame2024
+        flame_version: 2024.2.2
+      tags:
+        - flame
+    - role: flame-export-presets
+      tags:
+        - flame
+    - role: logik-matchbook
+      tags:
+        - logik
+    - role: sapphire
+      vars:
+        do: install
+        sapphire_version: 2024.510-1.0
+      tags:
+        - sapphire
+    - role: gcc
+    - role: kernel-devel
+    - role: rpm-build
+    - role: pcoip-host
+      vars:
+        do: install
+        pcoip_version: 4.8.0.400
+      tags:
+        - pcoip-host
+    - role: sentinel-agent
+      vars:
+        do: install
+        version: 24.1.2.6
+        site_token: eyJ1cmwiOiAiaHR0cHM6Ly93bHQuc2VudGluZWxvbmUubmV0IiwgInNpdGVfa2V5IjogIjc0NGE0MTUxNjQyZDFmNDgifQ==
+    - role: vaulted-repos
+    - role: blackmagic-desktopvideo
+      vars:
+        do: install
+        desktopvideo_version: 14.0.1a2
+    - role: security-config
+    - role: alertlogic
+      vars:
+        do: install
+    - role: manage-engine
+      vars:
+        api_key: '1003.ccdeda22645bddee2f257f778ea250e8.5f83c8d05bb96b141ff8d7bc0629ffae'
+# Once everything is finished unlink the repo
+    - role: smoke-repo
+      vars:
+        do: unlink

@@ -1,0 +1,26 @@
+---
+- name: Include vars
+  include_vars:
+    file: '{{ location }}.yml'
+
+- name: Check if AlertLogic is installed
+  shell: "rpm -qa | grep al-agent"
+  register: alertlogic_installed
+  changed_when: false
+  failed_when: false
+
+- name: Get installed AlertLogic version
+  set_fact:
+    current_alertlogic_version: "{{ alertlogic_installed.stdout.split('-')[2] if alertlogic_installed.rc == 0 else '' }}"
+
+- name: Debug variables
+  debug:
+    msg:
+      - "AlertLogic version is: {{ current_alertlogic_version }}"
+      - "Location is: {{ location }}"
+      - "Reg key is: {{ reg_key }}"
+      - "App ip is: {{ app_ip }}"
+
+- name: Include specific action tasks based on 'do' parameter
+  include_tasks: "{{ do }}.yml"
+  when: do in ['install', 'configure']

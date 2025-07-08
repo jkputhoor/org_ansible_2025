@@ -1,0 +1,36 @@
+---
+- name: unmount and shutdown all hosts 
+  hosts: Media
+  remote_user: root
+  gather_facts: no
+  become: yes
+  vars:
+    output_dir: "/Users/jayaput/Documents/media_details"
+    timestamp: "{{ lookup('pipe', 'date +%d%m%Y') }}"
+    random_suffix: "{{ lookup('pipe', 'date +%s') }}"
+    output_file: "{{ output_dir }}/{{ timestamp }}_{{ random_suffix }}.txt"
+  tasks:
+    - name: Run find command and save output to temporary file
+      command: find /packages/ -mindepth 1 -maxdepth 2 -type d \( -atime +90 -o -mtime +90 \) -exec du -sh {} \;
+      register: find_output
+      changed_when: false
+
+    - name: Display find command output
+      debug:
+        msg: "{{ find_output.stdout_lines }}"
+      
+    - name: Save output to Ansible server
+      copy:
+        content: "{{ find_output.stdout_lines | join('\n') }}"
+        dest: "{{ output_file }}"
+        remote_src: no
+        force: no
+      delegate_to: localhost
+      become: no
+    - name: Check storage space
+      shell: df -h /packages
+      register: stor
+    - name: Print storage space information
+      debug:
+        var: stor.stdout_lines
+

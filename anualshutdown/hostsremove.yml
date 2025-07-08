@@ -1,0 +1,13 @@
+---
+- name: nuke installe 
+  hosts: linux
+  remote_user: root
+  gather_facts: false
+  become: yes
+  tasks:
+    - name: Make sure group wheel is not in the sudoers configuration
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        state: absent
+        regexp: 'wl22smtco01.ind.emea.williamslea.grp$'
+ 

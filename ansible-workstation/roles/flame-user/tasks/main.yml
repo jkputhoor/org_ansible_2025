@@ -1,0 +1,15 @@
+---
+- name: Create generic Flame user
+  user:
+    name: flame2024
+    shell: /bin/bash
+    password: $6$lOWPjSWiTx3DeInt$Ak2/7Pohv/bMcHtyZIQHq4Ae3FjfJcbycVTtguirGpTDahpQ28.2nioNaSptmlEWVxfCA8lhRjem6MXHXURtE0
+
+- name: Set autologin for PCoIP
+  blockinfile:
+    path: "/etc/gdm/custom.conf"
+    marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+    block: |
+      AutomaticLoginEnable=True
+      AutomaticLogin=flame2024
+    insertafter: 'WaylandEnable=false'

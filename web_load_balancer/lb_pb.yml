@@ -1,0 +1,33 @@
+- name: setup LB using nginx
+  hosts: lb
+  become: yes
+  tasks:
+   - name: install software for  nginx
+     package:
+       name: nginx
+       state: present
+     register: libinstall
+   - name: Debug message if nginx installation is successful
+     debug:
+         msg: nginx installed successfully
+     when: libinstall is defined and not libinstall.failed
+   
+   - name: cofigure LB (nginx)
+     template:
+          src: "lb_conf_nginx.j2"
+          dest: "/etc/nginx/conf.d/reverse-proxy.conf"
+     notify: 
+     - "restart the nginx service"
+      
+   - name: start the nginx service
+     service:
+        name: nginx
+        state: started
+     when: not libinstall.failed
+
+  handlers:
+  - name: restart the nginx service
+    service:
+        name: nginx
+        state: restarted
+

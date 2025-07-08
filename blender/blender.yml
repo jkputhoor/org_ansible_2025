@@ -1,0 +1,66 @@
+---
+- name: Install Blender and create desktop icon for specific users
+  hosts: linux
+  remote_user: root
+  become: yes
+  gather_facts: no
+  vars:
+    blender_archive: "blender-4.2.0-linux-x64.tar.xz"
+    blender_archive_src: "/mnt/Smoke/Personal/jk/linux/blender/blender-4.2.0-linux-x64.tar.xz"
+    blender_extracted_dir: "/home/{{ item }}/Documents/blender-4.2.0-linux-x64"
+    desktop_entry: |
+      [Desktop Entry]
+      Type=Application
+      Name=Blender
+      Exec={{ blender_extracted_dir }}/blender
+      Icon={{ blender_extracted_dir }}/blender.svg
+      Terminal=false
+      Categories=Graphics;
+
+  tasks:
+    - name: Find users with "flame" in their username
+      command: getent passwd
+      register: users_list
+
+    - name: Set list of users with "flame" in username
+      set_fact:
+        flame_users: "{{ users_list.stdout_lines | select('match', 'flame') | map('split', ':') | map('first') | list }}"
+
+    - name: Check if Blender archive exists
+      stat:
+        path: "{{ blender_archive_src }}"
+      register: blender_archive_stat
+
+    - name: Debug Blender archive path
+      debug:
+        msg: "Blender archive path is: {{ blender_archive_src }}"
+
+    - name: Extract Blender archive to each user's Documents directory
+      unarchive:
+        src: "{{ blender_archive_src }}"
+        dest: "/home/{{ item }}/Documents/"
+        remote_src: yes
+        creates: "{{ blender_extracted_dir }}"
+      when: blender_archive_stat.stat.exists
+      loop: "{{ flame_users }}"
+
+    - name: Create desktop icon for each user
+      copy:
+        content: "{{ desktop_entry }}"
+        dest: "/home/{{ item }}/Desktop/Blender.desktop"
+        mode: '0644'
+        owner: "{{ item }}"
+      loop: "{{ flame_users }}"
+
+    - name: Make Blender desktop icon executable
+      file:
+        path: "/home/{{ item }}/Desktop/Blender.desktop"
+        mode: '0755'
+        owner: "{{ item }}"
+      loop: "{{ flame_users }}"
+
+    - name: Notify if Blender archive is missing
+      debug:
+        msg: "Blender archive {{ blender_archive_src }} does not exist."
+      when: not blender_archive_stat.stat.exists
+

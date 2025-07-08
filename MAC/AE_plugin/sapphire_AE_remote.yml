@@ -1,0 +1,71 @@
+---
+- name: Install SapphireAE on macOS
+  hosts: all
+  gather_facts: no
+  vars_files:
+    - vault.yml  # Make sure this file contains your sensitive variables
+  tasks:
+
+    - name: Mount the SapphireAE DMG
+      become: yes
+      become_user: root
+      become_method: su
+      command: hdiutil attach /Volumes/smoke/Personal/jk/2024_SOFT/MAC/Plugins/AE_SCRIPT/network/app_network/SapphireAEInstall-2024.53.dmg
+      register: mount_output
+      ignore_errors: yes
+      changed_when: "'SapphireAEInstaller_2024.53' in mount_output.stdout"
+      tags:
+        - mount
+
+    - name: Verify mounted volume
+      become: yes
+      become_user: root
+      become_method: su
+      command: ls /Volumes/SapphireAEInstaller_2024.53
+      register: verify_volume
+      changed_when: false
+      tags:
+        - verify
+
+    - name: Install SapphireAE package
+      become: yes
+      become_user: root
+      become_method: su
+      command: installer -pkg /Volumes/SapphireAEInstaller_2024.53/SapphireAEInstall-2024.53.pkg -target /
+      register: install_output
+      ignore_errors: yes
+      changed_when: "'successfully installed' in install_output.stdout"
+      tags:
+        - install
+
+    - name: Unmount the DMG after installation
+      become: yes
+      become_user: root
+      become_method: su
+      command: hdiutil detach /Volumes/SapphireAEInstaller_2024.53
+      when: install_output is succeeded
+      ignore_errors: yes
+      tags:
+        - unmount
+
+    - name: Ensure GenArts directory exists
+      become: yes
+      become_user: root
+      become_method: su
+      file:
+        path: /Library/Application Support/GenArts/rlm
+        state: directory
+      tags:
+        - license
+
+    - name: Create SapphireAE license file
+      become: yes
+      become_user: root
+      become_method: su
+      copy:
+        dest: /Library/Application Support/GenArts/rlm/SapphireAE.lic
+        content: "HOST 172.24.146.100 5053"
+#        content: "HOST 172.27.93.117 5053"
+      tags:
+        - license
+

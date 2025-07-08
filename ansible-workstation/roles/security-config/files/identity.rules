@@ -1,0 +1,4 @@
+-w /etc/shadow -p wa -k identity
+-w /etc/passwd -p wa -k identity
+-w /var/log/faillog -p wa -k login
+-w /var/log/lastlog -p wa -k login

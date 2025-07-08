@@ -1,0 +1,18 @@
+---
+- name: Check if BorisFX Sapphire OFX is installed
+  shell: "rpm -qa | grep SapphireOFX"
+  register: sapphire_ofx_installed
+  changed_when: false
+  failed_when: false
+
+- name: Get installed version of Sapphire OFX
+  set_fact:
+    current_sapphire_ofx_version: "{{ sapphire_ofx_installed.stdout.split('-')[1] if sapphire_ofx_installed.rc == 0 else '' }}"
+
+- name: DEBUG print Sapphire installation status and version
+  debug:
+    msg: "Sapphire installed: {{ sapphire_ofx_installed.stdout }}; Sapphire Version: {{ current_sapphire_ofx_version}}"
+
+- name: Which action to perform based on do parameter
+  include_tasks: "{{ do }}.yml"
+  when: do in ['install', 'update', 'uninstall']

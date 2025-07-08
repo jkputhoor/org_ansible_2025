@@ -1,0 +1,40 @@
+---
+- name: nuke installe 
+  hosts: linux
+  remote_user: root
+  gather_facts: false
+  become: yes
+  vars_files:
+    - source_path.yml
+  tasks:
+    - name: copying file with playbook
+      copy:
+        src: "{{ source }}"
+        remote_src: True
+        dest: "{{ path }}"
+        mode: 0755
+    - name: installing nuke 
+      shell: /var/tmp/./Nuke13.1v2-linux-x86_64.run --prefix=/usr/local   --accept-foundry-eula
+    - name: user id 
+      shell: "grep -i flame  /etc/passwd  | cut -d : -f 1"
+      register: userid
+    - name: make sure directory exsist
+      become: true
+      become_method: su
+      become_user: "{{userid.stdout}}" 
+      file:
+       path: ~/FoundryLicensing
+       state: directory
+       owner: "{{userid.stdout}}"
+       group: users 
+       mode: 0770
+    - name: adding license path
+      become: true
+      become_method: su
+      become_user: "{{userid.stdout}}" 
+      copy:
+       dest: ~/FoundryLicensing/foundry_client.lic
+       content: HOST 172.24.146.136 any 4101
+
+
+

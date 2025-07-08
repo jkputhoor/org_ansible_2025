@@ -1,0 +1,24 @@
+---
+- hosts: dev
+  roles:
+    - role: set-time-date
+    - role: flame-user
+    - role: autofs
+    - role: smoke-repo
+      vars:
+        do: link
+    - role: extra-repos
+    - role: x11vnc
+    - role: ffmpeg
+    - role: imagemagick
+    - role: pcoip-host
+      vars:
+        do: install
+        pcoip_version: 4.8.0.400
+    - role: burn
+      vars:
+        do: install
+        burn_version: 2024.2.2
+    - role: smoke-repo
+      vars:
+        do: unlink

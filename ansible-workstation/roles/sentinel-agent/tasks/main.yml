@@ -1,0 +1,14 @@
+---
+- name: Check if Sentinel Agent is installed
+  shell: "rpm -qa | grep SentinelAgent"
+  register: sentinel_agent_installed
+  changed_when: false
+  failed_when: false
+
+- name: Get version that is installed
+  set_fact:
+    current_sentinel_agent_version: "{{ sentinel_agent_installed.stdout.split('-')[1] if sentinel_agent_installed.rc == 0 else '' }}"
+
+- name: Include specific action tasks based on 'do' parameter
+  include_tasks: "{{ do }}.yml"
+  when: do in ['install', 'uninstall', 'update', 'configure']

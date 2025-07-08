@@ -1,0 +1,26 @@
+---
+- name: Check for al-agent installation on systems
+  hosts: linux
+  remote_user: root
+  become: yes
+  gather_facts: false
+
+  tasks:
+    - name: Check if al-agent is installed
+      command: dnf list installed al-agent
+      register: al_agent_installed
+      ignore_errors: yes
+      tags: check
+
+    - name: Display system with al-agent installed
+      debug:
+        msg: "al-agent is installed on {{ inventory_hostname }}"
+      when: al_agent_installed.rc == 0
+      tags: check
+
+    - name: Display system without al-agent installed
+      debug:
+        msg: "al-agent is NOT installed on {{ inventory_hostname }}"
+      when: al_agent_installed.rc != 0
+      tags: check
+

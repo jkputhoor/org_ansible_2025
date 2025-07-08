@@ -1,0 +1,18 @@
+---
+- name: Manage Firewall on Rocky Linux
+  hosts: linux
+  remote_user: root
+  gather_facts: false
+  become: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3.9  # Force Python 3 on the remote host
+  tasks:
+    - name: Check firewall status
+      command: firewall-cmd --state
+      register: firewall_status
+      ignore_errors: yes
+
+    - name: Display firewall status
+      debug:
+        msg: "Firewall status: {{ firewall_status.stdout }}"
+

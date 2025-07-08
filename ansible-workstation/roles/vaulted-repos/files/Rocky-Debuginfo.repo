@@ -1,0 +1,38 @@
+# Rocky-Debuginfo.repo
+#
+
+[baseos-debuginfo]
+name=Rocky Linux 8.7 - BaseOS - Source
+baseurl=http://dl.rockylinux.org/vault/rocky/8.7/BaseOS/$basearch/debug/tree/
+gpgcheck=1
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rockyofficial
+
+[appstream-debuginfo]
+name=Rocky Linux 8.7 - AppStream - Source
+baseurl=http://dl.rockylinux.org/vault/rocky/8.7/AppStream/$basearch/debug/tree/
+gpgcheck=1
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rockyofficial
+
+[ha-debuginfo]
+name=Rocky Linux 8.7 - High Availability - Source
+baseurl=http://dl.rockylinux.org/vault/rocky/8.7/HighAvailability/$basearch/debug/tree/
+gpgcheck=1
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rockyofficial
+
+[powertools-debuginfo]
+name=Rocky Linux 8.7 - PowerTools - Source
+baseurl=http://dl.rockylinux.org/vault/rocky/8.7/PowerTools/$basearch/debug/tree/
+gpgcheck=1
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rockyofficial
+
+[resilient-storage-debuginfo]
+name=Rocky Linux 8.7 - Resilient Storage - Source
+baseurl=http://dl.rockylinux.org/vault/rocky/8.7/ResilientStorage/$basearch/debug/tree/
+gpgcheck=1
+enabled=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rockyofficial
+

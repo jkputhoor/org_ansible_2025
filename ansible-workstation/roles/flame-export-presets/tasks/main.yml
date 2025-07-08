@@ -1,0 +1,17 @@
+---
+- name: Copy main export presets
+  copy:
+    src: "{{ item }}"
+    dest: /opt/Autodesk/shared/export/presets/movie_file/
+    owner: flame2024
+    group: flame2024
+    mode: '0644'
+  with_items:
+    - 'MASTER_ProRes4444.xml'
+    - 'VIEWING_H264.xml'
+    - 'Final Cut Pro (Apple ProRes 422 HQ)_setting for Harding.xml'
+    - 'Final Cut Pro (Apple ProRes 422 HQ)_setting for Harding_custom.xml'
+    - 'MIO ProRes2019 (Apple ProRes 4444).xml'
+    - 'MIO ProRes2019 (Apple ProRes 4444)_Ingest_LDN_output.xml'
+    - 'QuickTime (8-bit Uncompressed)_INGEST_low res export.xml'
+    - 'UNILEVER MCR INCOMING.xml'

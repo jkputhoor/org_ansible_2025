@@ -1,0 +1,28 @@
+- name: Gather and send disk space details via email
+  hosts:
+    - lon
+    - ind
+  vars_files:
+    - vars01.yml  # This contains your Gmail credentials
+
+  tasks:
+    - name: Gather disk space details for /package (lon) and /mnt/StorageMedia/ (ind)
+      command: "df -h {{ target_dir }}"
+      register: disk_space
+      vars:
+        target_dir: "{{ '/packages' if ansible_host == '172.27.92.199' else '/mnt/StorageMedia/' }}"
+    
+    - name: Send disk space details via email
+      community.general.mail:
+        host: smtp.gmail.com
+        port: 587
+        username: "{{ gmail_username }}"
+        password: "{{ gmail_password }}"
+        to: "JK <jayakrishnan.puthoor@tagww.com>"
+        subject: "Storage Space Report for {{ ansible_hostname }}"
+        body: |
+          Host: {{ ansible_hostname }}
+          {{ disk_space.stdout }}
+        secure: starttls
+      delegate_to: localhost
+

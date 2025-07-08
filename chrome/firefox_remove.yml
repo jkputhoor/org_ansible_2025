@@ -1,0 +1,17 @@
+---
+- name: Remove Firefox from all systems
+  hosts: linux
+  remote_user: root
+  become: yes
+  gather_facts: false
+
+  tasks:
+    - name: Check if Firefox is installed
+      command: dnf list installed firefox
+      register: firefox_installed
+      ignore_errors: yes
+
+    - name: Remove Firefox if installed
+      command: dnf remove -y firefox
+      when: firefox_installed.rc == 0
+

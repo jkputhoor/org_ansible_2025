@@ -1,0 +1,6 @@
+---
+- name: Register site token
+  command: "/opt/sentinelone/bin/sentinelctl management token set {{ site_token }}"
+
+- name: Activate agent
+  command: "/opt/sentinelone/bin/sentinelctl control start"

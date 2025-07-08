@@ -1,0 +1,23 @@
+---
+- name: Ensure scan_script directory is present
+  file:
+    path: /usr/local/scan_script
+    owner: root
+    group: root
+    mode: '0700'
+    state: directory
+
+- name: Copy over the scan_script.sh file
+  copy:
+    src: scan_script.sh
+    dest: /usr/local/scan_script
+    owner: root
+    group: root
+    mode: '0700'
+
+- name: Add to crontab
+  cron:
+    name: "Daily ManageEngine scan"
+    minute: "{{ cron_minute}}"
+    hour: "{{ cron_hour}}"
+    job: '/usr/local/scan_script/scan_script.sh "apiKey={{ api_key }}"'

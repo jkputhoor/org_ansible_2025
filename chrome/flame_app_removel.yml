@@ -1,0 +1,26 @@
+---
+- name: Remove specified packages from all systems
+  hosts: linux
+  remote_user: root
+  become: yes
+  gather_facts: false
+
+  vars:
+    packages:
+      - git
+      - git-core
+      - firefox
+      - thunderbird
+
+  tasks:
+    - name: Check if packages are installed
+      command: "dnf list installed {{ item }}"
+      loop: "{{ packages }}"
+      register: package_status
+      ignore_errors: yes
+
+    - name: Remove installed packages
+      command: "dnf remove -y {{ item.item }}"
+      loop: "{{ package_status.results }}"
+      when: item.rc == 0
+

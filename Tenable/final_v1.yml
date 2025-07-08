@@ -1,0 +1,37 @@
+---
+- name: Tenable NessusAgent installation and activation
+  hosts: linux
+  remote_user: root
+  gather_facts: true
+  become: yes
+  vars_files:
+    - source_path.yml
+  tasks:
+    - name: Determine RPM file based on OS version
+      set_fact:
+        rpm_file: "NessusAgent-10.5.1-el{{ ansible_distribution_major_version }}.x86_64.rpm"
+
+    - name: Copy RPM file from client system
+      copy:
+        src: "{{ source_path }}/{{ rpm_file }}"
+        dest: "/tmp/"
+        remote_src: True
+        mode: 0755
+
+    - name: Copy GPG key file to target host
+      copy:
+        src: "{{ source_path }}/tenable-4096.gpg"
+        dest: "/tmp/tenable-4096.gpg"
+        remote_src: yes
+
+    - name: Import GPG key
+      rpm_key:
+        state: present
+        key: "/tmp/tenable-4096.gpg"
+
+    - name: Install RPM package using yum
+      yum:
+       name: "/tmp/NessusAgent-10.5.1-el{{ ansible_distribution_major_version }}.x86_64.rpm"
+       state: present
+    - name:
+      command: /opt/nessus_agent/sbin/nessuscli agent link --key=95d901246ea253f197a19f4c06c36050869e6e996ed6a9382ff66d0e34090553 --groups=" TAG_WS" --host=cloud.tenable.com --port=443

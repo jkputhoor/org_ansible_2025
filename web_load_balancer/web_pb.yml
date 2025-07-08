@@ -1,0 +1,23 @@
+- name: setting up backend server
+  hosts: web
+  become: yes
+  tasks:
+   - name: install software for  httpd
+     package:
+       name: httpd
+       state: present
+     register: webhttpd
+   - name: Debug message if webhttpd installation is successful
+     debug:
+         msg: httpd installed successfully
+     when: libinstall is defined and not webhttpd.failed
+   - name: copy module for copy hhtp page
+     copy:
+        dest: "/var/www/html/index.html"
+        content: "welcome to LW \n {{ ansible_hostname }} " 
+   - name: start the httpd service
+     service:
+        name: httpd
+        state: started
+     when: not webhttpd.failed
+

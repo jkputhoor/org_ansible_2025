@@ -1,0 +1,25 @@
+---
+- name: Remove remotePC application and install new version
+  hosts: linux
+  remote_user: root
+  gather_facts: false
+  become: yes
+  vars_files:
+    - source_path.yml
+  tasks:
+    - name: Remove existing remotePC version
+      shell: rpm -e --nodeps 'remotepc-host-*'
+      ignore_errors: yes
+    - name: Remove directories
+      shell: find /opt/Autodesk/ -type d -iname "remote*" -print0 | xargs -0 rm -r || true
+    - name: Copy RPM file
+      copy:
+        src: "{{ source_path }}/remotepc-host-old.rpm"
+        dest: "/tmp/remotepc-host-old.rpm"
+        remote_src: yes
+
+    - name: Install new RPM
+      yum:
+        name: "/tmp/remotepc-host-old.rpm"
+        state: present
+

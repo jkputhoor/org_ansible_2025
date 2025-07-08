@@ -1,0 +1,22 @@
+---
+- name: unmount and shutdown all hosts 
+  hosts: linux
+  remote_user: root
+  gather_facts: False
+  become: yes
+  tasks:
+    - name: test hosts are mounted or not
+      shell: df -h | grep -i /hosts 
+      register: hostsmount
+      ignore_errors: True
+      no_log: true
+#    - name:
+#      debug:
+#         var: hostsmount.rc
+    - name: unmount all files
+      shell: 
+         umount -l $(df -h | grep -i /hosts | cut -d " " -f1)
+      when: hostsmount.rc == 0
+    - name: Delay shutting down the remote node
+      community.general.shutdown:
+        delay: 120
