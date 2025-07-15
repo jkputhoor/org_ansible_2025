@@ -1,0 +1,45 @@
+
+PLAY [all] *********************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [INCHImd01550088]
+ok: [INCHImd70373958]
+ok: [INCHImd71990958]
+ok: [172.24.146.20]
+ok: [INCHImd71999958]
+ok: [172.24.153.111]
+ok: [INCHImd72302958]
+ok: [INCHImd72000958]
+ok: [INCHImd72300958]
+ok: [INCHImd72285958]
+ok: [INCHImd72294958]
+ok: [INCHImd72293958]
+ok: [INCHImd72301958]
+ok: [INCHImd72291958]
+ok: [INCHImd72268958]
+ok: [INCHImd72384958]
+fatal: [INCHImd80015958]: FAILED! => {"ansible_facts": {}, "changed": false, "failed_modules": {"ansible.legacy.setup": {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python3"}, "failed": true, "module_stderr": "Shared connection to inchimd80015958 closed.\r\n", "module_stdout": "\r\nxcode-select: error: No developer tools were found and no install could be requested (possibly because there is no active GUI session).\r\nIf developer tools are located at a non-default location on disk, use `sudo xcode-select --switch path/to/Xcode.app` to specify the Xcode that you wish to use for command line developer tools.\r\nUse `xcode-select --install` to install the standalone command line developer tools, or visit http://adc.apple.com to download Xcode or the standalone command line tools installation package.\r\nSee `man xcode-select` for more details.\r\n", "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error", "rc": 1, "warnings": ["Platform darwin on host INCHImd80015958 is using the discovered Python interpreter at /usr/bin/python3, but future installation of another Python interpreter could change the meaning of that path. See https://docs.ansible.com/ansible-core/2.17/reference_appendices/interpreter_discovery.html for more information."]}}, "msg": "The following modules failed to execute: ansible.legacy.setup\n"}
+ok: [172.24.145.81]
+ok: [INCHImd70075958]
+ok: [INCHImd70080958]
+ok: [INCHImd71160088]
+ok: [INCHImd80071958]
+ok: [INCHImd01561958]
+
+PLAY [all] *********************************************************************
+
+TASK [Gathering Facts] *********************************************************
+fatal: [INCHImd80015958]: FAILED! => {"ansible_facts": {}, "changed": false, "failed_modules": {"ansible.legacy.setup": {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python3"}, "failed": true, "module_stderr": "Shared connection to inchimd80015958 closed.\r\n", "module_stdout": "\r\nxcode-select: error: No developer tools were found and no install could be requested (possibly because there is no active GUI session).\r\nIf developer tools are located at a non-default location on disk, use `sudo xcode-select --switch path/to/Xcode.app` to specify the Xcode that you wish to use for command line developer tools.\r\nUse `xcode-select --install` to install the standalone command line developer tools, or visit http://adc.apple.com to download Xcode or the standalone command line tools installation package.\r\nSee `man xcode-select` for more details.\r\n", "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error", "rc": 1, "warnings": ["Platform darwin on host INCHImd80015958 is using the discovered Python interpreter at /usr/bin/python3, but future installation of another Python interpreter could change the meaning of that path. See https://docs.ansible.com/ansible-core/2.17/reference_appendices/interpreter_discovery.html for more information."]}}, "msg": "The following modules failed to execute: ansible.legacy.setup\n"}
+
+PLAY RECAP *********************************************************************
+INCHImd80015958            : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+
+
+PLAY [all] *********************************************************************
+
+TASK [Gathering Facts] *********************************************************
+fatal: [INCHImd80015958]: FAILED! => {"ansible_facts": {}, "changed": false, "failed_modules": {"ansible.legacy.setup": {"ansible_facts": {"discovered_interpreter_python": "/usr/bin/python3"}, "failed": true, "module_stderr": "Shared connection to inchimd80015958 closed.\r\n", "module_stdout": "\r\nxcode-select: error: No developer tools were found and no install could be requested (possibly because there is no active GUI session).\r\nIf developer tools are located at a non-default location on disk, use `sudo xcode-select --switch path/to/Xcode.app` to specify the Xcode that you wish to use for command line developer tools.\r\nUse `xcode-select --install` to install the standalone command line developer tools, or visit http://adc.apple.com to download Xcode or the standalone command line tools installation package.\r\nSee `man xcode-select` for more details.\r\n", "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error", "rc": 1, "warnings": ["Platform darwin on host INCHImd80015958 is using the discovered Python interpreter at /usr/bin/python3, but future installation of another Python interpreter could change the meaning of that path. See https://docs.ansible.com/ansible-core/2.17/reference_appendices/interpreter_discovery.html for more information."]}}, "msg": "The following modules failed to execute: ansible.legacy.setup\n"}
+
+PLAY RECAP *********************************************************************
+INCHImd80015958            : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+

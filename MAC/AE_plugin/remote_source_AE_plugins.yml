@@ -66,3 +66,20 @@
         msg: "{{ license_output.stdout }}"
       tags: 
        - license
+#######################################
+    - name: Copy and set permissions for Smart Resize 2.jsxbin
+      copy:
+        src: /Volumes/smoke/Personal/jk/2024_SOFT/MAC/Plugins/AE_SCRIPT/network/SmartResize/Smart Resize 2.jsxbin
+        dest: /Applications/Adobe After Effects 2025/Scripts/ScriptUI Panels/Smart Resize 2.jsxbin
+        owner: wltadmin
+        group: everyone
+        mode: '0777'
+        remote_src: yes
+      tags:
+        - resize
+    - name: Set permissions for Smart Resize 2.jsxbin (optional, if needed again)
+      shell: chmod -R 777 "/Applications/Adobe After Effects 2025/Scripts/ScriptUI Panels/Smart Resize 2.jsxbin"
+      tags:
+        - resize
+
+
